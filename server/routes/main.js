@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 
 // Routes
@@ -16,4 +16,4 @@ router.get('/about', (req, res) => {
     res.render('about');
 });
 
-module.exports = router;
+export default router;

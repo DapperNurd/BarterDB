@@ -11,13 +11,15 @@
   "author": "",
   "license": "ISC",
   "description": "",
+  "type": "module",
   "dependencies": {
     "cookie-parser": "^1.4.6",
     "dotenv": "^16.4.5",
     "ejs": "^3.1.10",
     "express": "^4.21.0",
     "express-ejs-layouts": "^2.5.1",
-    "express-session": "^1.18.0"
+    "express-session": "^1.18.0",
+    "mysql2": "^3.11.3"
   },
   "devDependencies": {
     "nodemon": "^3.1.7"
