@@ -1,8 +1,12 @@
 import './App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import Header from './components/Header';
-import Footer from './components/Footer';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+
+import Home from './pages/Home/Home';
+import About from './pages/About/About';
+import Contact from './pages/Contact/Contact';
+import Error from './pages/Error/Error';
 
 function App() {
 
@@ -21,14 +25,15 @@ function App() {
   return (
     <div className="container">
 
-        <Header />
-        
-        <main className="main">
-          {listOfPosts.map((value, key) => {return <div>{value.email}</div>})}
-          {/* <%- body %> */}
-        </main>
-
-        <Footer />
+        <BrowserRouter>
+          <Routes>
+            <Route index element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="*" element={<Error />} />
+          </Routes>
+        </BrowserRouter>
 
     </div>
   );

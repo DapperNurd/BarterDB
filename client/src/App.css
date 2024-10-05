@@ -6,7 +6,7 @@ html, body, #root {
     overflow: auto;
     height: 100%;
 
-    font-family: "Poppins", 'Roboto', Verdana;
+    font-family: "Poppins", 'Roboto', Verdana, sans-serif;
 }
 
 body {

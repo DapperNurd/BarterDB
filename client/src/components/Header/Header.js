@@ -1,15 +1,17 @@
 import React, {useState} from 'react';
 import './Header.css';
 
-function Header() {
+export default function Header() {
     return (
         <header className="header">
             <a to="/" className="header_logo">BarterDB</a>
 
             <nav className="nav">
-                <a href="/" className="nav-item">Home</a>
-                <a href="/about" className="nav-item">About</a>
-                <a href="/contact" className="nav-item">Contact</a>
+                <ul>
+                    <li key="home"><a href="/" className="nav-item">Home</a></li>
+                    <li key="about"><a href="/about" className="nav-item">About</a></li>
+                    <li key="contact"><a href="/contact" className="nav-item">Contact</a></li>
+                </ul>
             </nav>
 
             <div className="header_button">
@@ -18,5 +20,3 @@ function Header() {
         </header>
     );
 }
-
-export default Header;

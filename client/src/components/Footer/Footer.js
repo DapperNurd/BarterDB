@@ -3,7 +3,7 @@ import './Footer.css';
 
 function Footer() {
     return (
-        <footer class="footer">
+        <footer className="footer">
             &copy; { new Date().getFullYear() } Ben Bonus, Davin Lewis • Built with NodeJS & Express
         </footer>
     );
