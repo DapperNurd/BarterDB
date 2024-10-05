@@ -1,3 +1,4 @@
+@ -1,153 +1,2 @@
 # Logs
 logs
 *.log
@@ -130,7 +131,7 @@ dist
 .pnp.*
 
 # client stuff
-client//node_modules
+client/node_modules
 client//.pnp
 client/.pnp.js
 
@@ -150,4 +151,3 @@ client/.env.production.local
 client/npm-debug.log*
 client/yarn-debug.log*
 client/yarn-error.log*
-

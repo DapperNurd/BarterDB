@@ -1,6 +1,8 @@
 import './App.css';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import Header from './components/Header';
+import Footer from './components/Footer';
 
 function App() {
 
@@ -17,8 +19,17 @@ function App() {
   }, []);
   
   return (
-    <div className="App">
-      {listOfPosts.map((value, key) => {return <div>{value.email}</div>})}
+    <div className="container">
+
+        <Header />
+        
+        <main className="main">
+          {listOfPosts.map((value, key) => {return <div>{value.email}</div>})}
+          {/* <%- body %> */}
+        </main>
+
+        <Footer />
+
     </div>
   );
 }
