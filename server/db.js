@@ -1,4 +1,7 @@
-import mysql from 'mysql2';
+const dotenv = require('dotenv');
+dotenv.config({ path: `../.env` });
+
+const mysql = require('mysql2');
 
 const db = mysql.createPool({
     host: process.env.DB_HOST,
@@ -7,4 +10,4 @@ const db = mysql.createPool({
     database: 'BarterDB'
 }).promise();
 
-export default db;
+module.exports = db;

@@ -39,8 +39,8 @@ bower_components
 build/Release
 
 # Dependency directories
-node_modules/
-jspm_packages/
+*/node_modules/
+*/jspm_packages/
 
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
@@ -128,3 +128,26 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# client stuff
+client//node_modules
+client//.pnp
+client/.pnp.js
+
+# testing
+client//coverage
+
+# production
+client//build
+
+# misc
+client/.DS_Store
+client/.env.local
+client/.env.development.local
+client/.env.test.local
+client/.env.production.local
+
+client/npm-debug.log*
+client/yarn-debug.log*
+client/yarn-error.log*
+
