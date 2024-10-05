@@ -19,6 +19,11 @@ app.set('view engine', 'ejs');
 
 app.use('/', (await import('./server/routes/main.js')).default);
 
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Something broke!');
+});
+
 app.listen(PORT, () => {
     console.log(`Server app on port ${PORT}.`);
 });
