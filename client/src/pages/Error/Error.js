@@ -8,7 +8,7 @@ export default function Error() {
         <>
             <Header />
             <main className="main">
-                <h1>Error 404: Page not found.</h1>
+                <h1 className="Error">Error 404: Page not found.</h1>
             </main>
             <Footer />
         </>

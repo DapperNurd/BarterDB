@@ -19,7 +19,7 @@ export default function Header() {
             </nav>
 
             <div className="header_buttons">
-                <button className="header_button">Sign In</button>
+                <Link to="/signin" className="header_button">Sign In</Link>
             </div>
         </header>
     );

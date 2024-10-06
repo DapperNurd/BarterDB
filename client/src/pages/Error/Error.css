@@ -1,0 +1,7 @@
+.Error {
+    background: linear-gradient(130deg, rgb(221, 47, 35) 40%, rgb(202, 12, 101) 60%);
+    background-clip: text;
+    color: transparent;
+    text-align: center;
+    font-size: 1.8rem;
+}
