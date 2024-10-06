@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
+:root {
+    --primary-color: #c300ff;
+    --secondary-color: #003cff;
+}
+
 html, body, #root {
     margin: 0;
     padding: 0;
@@ -10,13 +15,15 @@ html, body, #root {
 }
 
 body {
-    background-image: linear-gradient(0deg, #505285 0%, #585e92 12%, #65689f 25%, #7474b0 37%, #7e7ebb 50%, #8389c7 62%, #9795d4 75%, #a2a1dc 87%, #b5aee4 100%);
+    background-image: linear-gradient(0deg, #0b0c15, #05060a);
+
+    color: white;
 }
 
 .container {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
 }
 .main {
     flex: 1;
