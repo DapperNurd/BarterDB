@@ -42,6 +42,7 @@ export default function Signin() {
 						<h1>Sign In</h1>
 						<div className={styles.status}>{loginStatus}</div>
 					</div>
+					
 					<label>Email</label>
 					<input 
 						type="email"

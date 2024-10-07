@@ -11,9 +11,11 @@ export default function Signup() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     
+    const [signinStatus, setSigninStatus] = useState(" "); // This is an white-space char, so the auto height still considers it.
+
     const register = () => {
 		if(email === "" || password === "") {
-			alert("Please fill in all fields"); // this is a temp notification thing
+			setSigninStatus("Please fill in all required (*) fields."); // this is a temp notification thing
 			return;
 		}
 
@@ -22,7 +24,7 @@ export default function Signup() {
 			password: password,
 		})
 		.then((response) => {
-			console.log(response.data);
+			setSigninStatus(response.data.message ?? " ");
 		})
 		.catch((error) => {
 			console.error("There was an error with the registration request:", error);
@@ -33,31 +35,32 @@ export default function Signup() {
         <>
             <Header />
             <main className={styles.main}>
-                <h1>Signup</h1>
+				<div className={styles.section}>
+				<div className={styles.header}>
+						<h1>Sign Up</h1>
+						<div className={styles.status}>{signinStatus}</div>
+					</div>
 
-                <label>Email</label>
-                <input 
-					type="email"
-					placeholder='Email'
-					onChange = {(e) => {
-						setEmail(e.target.value);
-					}} 
-                />
+					<label>Email</label>
+					<input 
+						type="email"
+						placeholder='Email'
+						onChange = {(e) => {
+							setEmail(e.target.value);
+						}} 
+					/>
 
-                <br/>
+					<label>Password</label>
+					<input 
+						type="password"
+						placeholder='Password'
+						onChange = {(e) => {
+							setPassword(e.target.value);
+						}} 
+					/>
 
-                <label>Password</label>
-                <input 
-					type="password"
-					placeholder='Password'
-					onChange = {(e) => {
-						setPassword(e.target.value);
-					}} 
-                />
-
-                <br/>
-
-                <button onClick={register}>Register</button>
+					<button onClick={register}>Register</button>
+				</div>
             </main>
             <Footer />
         </>
