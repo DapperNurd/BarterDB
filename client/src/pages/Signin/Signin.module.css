@@ -55,6 +55,8 @@
 
     background-color: #080910;
 
+    border: 2px solid white;
+
     color: white;
 
     position: relative;
@@ -65,10 +67,12 @@
 }
 
 .section button:hover {
-    background-color: #11131d;
+    background-color: #222636;
 }
 
-
+.section button:active {
+    background-color: #333541;
+}
 
 .link {
     width: fit-content;
