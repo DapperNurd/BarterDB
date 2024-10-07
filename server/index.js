@@ -1,8 +1,13 @@
 require('dotenv/config');
+
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcrypt');
 
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+
+const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
 const db = require('./db.js');
@@ -10,7 +15,23 @@ const db = require('./db.js');
 const app = express();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:3000'],
+    methods: ['GET', 'POST'],
+    credentials: true
+}));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+app.use(session({
+    key: 'userId',
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        expires: 60 * 60 * 24 // 24 hours
+    }
+}));
 
 app.post('/register', async (req, res) => {
     const email = req.body.email;
@@ -40,6 +61,14 @@ app.post('/register', async (req, res) => {
     
 });
 
+app.get('/login', (req, res) => {
+    if(req.session.user) {
+        res.send({loggedIn: true, user: req.session.user});
+    }
+    else {
+        res.send({loggedIn: false});
+    }
+});
 app.post('/login', async (req, res) => {
 
     const email = req.body.email;
@@ -51,7 +80,9 @@ app.post('/login', async (req, res) => {
         if(result.length > 0) {
             const passwordMatch = await bcrypt.compare(password, result[0].password);
             if(passwordMatch) {
-                res.send(passwordMatch ? result[0] : {message: 'Wrong email/password combination.'});
+                req.session.user = result[0];
+                console.log(req.session.user);
+                res.send(result[0]);
             }
             else {
                 res.send({message: 'Wrong email/password combination.'});

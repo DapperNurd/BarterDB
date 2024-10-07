@@ -15,6 +15,8 @@ export default function Signin() {
 
     const [loginStatus, setLoginStatus] = useState(" "); // This is an white-space char, so the auto height still considers it.
     
+	axios.defaults.withCredentials = true;
+
     const login = async () => {
 		if(email === "" || password === "") {
 			setLoginStatus("Please fill in all required (*) fields."); // this is a temp notification thing
@@ -26,12 +28,20 @@ export default function Signin() {
 			password: password,
 		})
 		.then((response) => {
-			setLoginStatus(response.data.email ?? response.data.message);
+			setLoginStatus(response.data.message ?? response.data[0].email);
 		})
 		.catch((error) => {
 			setLoginStatus(" ");
 		});
     }
+
+	useEffect(() => {
+		axios.get("http://localhost:5000/login").then((response) => {
+			if(response.data.loggedIn === true) {
+				setLoginStatus(response.data.user.email);
+			}
+		});
+	}, []);
 
     return (
         <>
@@ -42,7 +52,7 @@ export default function Signin() {
 						<h1>Sign In</h1>
 						<div className={styles.status}>{loginStatus}</div>
 					</div>
-					
+
 					<label>Email</label>
 					<input 
 						type="email"

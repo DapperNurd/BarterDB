@@ -13,6 +13,8 @@ export default function Signup() {
     
     const [signinStatus, setSigninStatus] = useState(" "); // This is an white-space char, so the auto height still considers it.
 
+	axios.defaults.withCredentials = true;
+
     const register = () => {
 		if(email === "" || password === "") {
 			setSigninStatus("Please fill in all required (*) fields."); // this is a temp notification thing
