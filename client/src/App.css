@@ -1,20 +1,20 @@
+/* Font import */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-:root {
+:root { /* Public variables go here */
     --primary-color: #c300ff;
     --secondary-color: #003cff;
+    --error-color: rgb(255, 141, 141);
 }
 
-html, body, #root {
+* { /* Removes default margin and padding on all elements */
     margin: 0;
     padding: 0;
-    overflow: auto;
-    height: 100%;
-
-    font-family: "Poppins", 'Roboto', Verdana, sans-serif;
 }
 
 body {
+    font-family: "Poppins", 'Roboto', Verdana, sans-serif;
+
     background-image: linear-gradient(0deg, #0b0c15, #05060a);
 
     color: white;
@@ -25,6 +25,7 @@ body {
     display: grid;
     grid-template-rows: auto 1fr auto;
 }
+
 .main {
-    flex: 1;
+    padding: 3rem;
 }

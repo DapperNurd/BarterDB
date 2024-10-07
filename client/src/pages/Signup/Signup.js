@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 
-import "./Signup.css";
+import styles from "./Signup.module.css";
 
 export default function Signup() {
 
@@ -12,42 +12,51 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     
     const register = () => {
-        if(email === "" || password === "") {
-          alert("Please fill in all fields"); // this is a temp notification thing
-          return;
-        }
+		if(email === "" || password === "") {
+			alert("Please fill in all fields"); // this is a temp notification thing
+			return;
+		}
 
-      axios.post("http://localhost:5000/register", {
-        email: email,
-        password: password,
-      }).then((response) => {
-        console.log(response);
-      });
+		axios.post("http://localhost:5000/register", {
+			email: email,
+			password: password,
+		})
+		.then((response) => {
+			console.log(response.data);
+		})
+		.catch((error) => {
+			console.error("There was an error with the registration request:", error);
+		});;
     }
 
     return (
         <>
             <Header />
-            <main className="main">
+            <main className={styles.main}>
                 <h1>Signup</h1>
+
                 <label>Email</label>
                 <input 
-                  type="email"
-                  placeholder='Email'
-                  onChange = {(e) => {
-                    setEmail(e.target.value);
-                  }} 
+					type="email"
+					placeholder='Email'
+					onChange = {(e) => {
+						setEmail(e.target.value);
+					}} 
                 />
+
                 <br/>
+
                 <label>Password</label>
                 <input 
-                  type="password"
-                  placeholder='Password'
-                  onChange = {(e) => {
-                    setPassword(e.target.value);
-                  }} 
+					type="password"
+					placeholder='Password'
+					onChange = {(e) => {
+						setPassword(e.target.value);
+					}} 
                 />
+
                 <br/>
+
                 <button onClick={register}>Register</button>
             </main>
             <Footer />

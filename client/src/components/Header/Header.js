@@ -1,25 +1,27 @@
 import React, {useState} from 'react';
-import './Header.css';
+import headerStyles from './Header.module.css';
+import navStyles from './Nav.module.css';
+import headerButtonsStyles from './Header_Buttons.module.css';
 
 import { Link } from 'react-router-dom';
 
 export default function Header() {
     return (
-        <header className="header">
-            <div className="title">
-                <Link to="/" className="header_logo">BarterDB</Link>
+        <header className={headerStyles.header}>
+            <div className={headerStyles.title}>
+                <Link to="/" className={headerStyles.header_logo}>BarterDB</Link>
             </div>
 
-            <nav className="nav">
+            <nav className={navStyles.nav}>
                 <ul>
-                    <li key="home"><Link to="/" className="nav-item">Home</Link></li>
-                    <li key="about"><Link to="/about" className="nav-item">About</Link></li>
-                    <li key="contact"><Link to="/contact" className="nav-item">Contact</Link></li>
+                    <li key="home"><Link to="/">Home</Link></li>
+                    <li key="about"><Link to="/about">About</Link></li>
+                    <li key="contact"><Link to="/contact">Contact</Link></li>
                 </ul>
             </nav>
 
-            <div className="header_buttons">
-                <Link to="/signin" className="header_button">Sign In</Link>
+            <div className={headerButtonsStyles.header_buttons}>
+                <Link to="/signin" className={headerButtonsStyles.header_button}>Sign In</Link>
             </div>
         </header>
     );

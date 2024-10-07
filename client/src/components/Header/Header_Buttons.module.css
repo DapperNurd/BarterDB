@@ -1,0 +1,59 @@
+.header_buttons {
+    grid-area: buttons;
+    justify-self: end;
+}
+
+.header_button {
+    cursor: pointer;
+    color: white;
+
+    font-size: 1.25rem;
+    /* font-weight: bold; */
+
+    background-color: #05060b;
+
+    border-radius: 15px;
+
+    padding: 10px 15px;
+
+    transition: 0.15s;
+
+    position: relative;
+}
+
+.header_button::after, .header_button::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    width: 100%;
+    height: 100%;
+    background-image: conic-gradient(var(--primary-color), var(--secondary-color), var(--primary-color));
+    z-index: -1;
+
+    padding: 3px;
+    border-radius: 18px;
+
+    transition: 0.1s;
+
+    pointer-events:none;
+}
+
+.header_button:active {
+    transition: 0s;
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.header_button:hover::after {
+    filter:blur(10px);
+}
+
+.header_button:active::after {
+    filter:blur(15px);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}

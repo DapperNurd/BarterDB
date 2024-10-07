@@ -1,0 +1,13 @@
+.main {
+    align-self: center;
+    justify-self: center;
+
+    width: 300px;
+    height: 300px;
+
+    border: 2px solid white;
+
+    border-radius: 15px;
+
+    display: grid;
+}

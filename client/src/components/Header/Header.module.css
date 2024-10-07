@@ -1,0 +1,76 @@
+.header {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: "title nav buttons";
+    align-items: center;
+
+    height: 120px;
+
+    padding: 0 3rem;
+
+    font-size: 1.5rem;
+}
+
+/* This is the border on the bottom of the header */
+.header::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    left: 0;
+    top: 119px;
+    background: linear-gradient(130deg, var(--primary-color), var(--secondary-color));
+    filter: blur(1px);
+}
+
+.title {
+    grid-area: title;
+
+    font-size: 3rem;
+    font-weight: bold;
+}
+
+/* For some reason, IDK how, this causes the gradient text to work properly on firefox */
+@-moz-document url-prefix() {
+    .header_logo{ 
+        background: none;
+        color: white;
+    }
+} 
+
+.header_logo {
+    position: relative;
+    color: transparent;
+}
+
+@property --angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+.header_logo::after, .header_logo::before {
+    content: 'BarterDB';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+    background: linear-gradient(var(--angle), var(--primary-color), var(--secondary-color));
+    background-clip: text;
+    animation: 5s spin linear infinite;
+}
+
+.header_logo::after {
+    filter: blur(20px) opacity(0.9);
+}
+
+@keyframes spin {
+    from {
+        --angle: 0deg;
+    }
+    to {
+        --angle: 360deg;
+    }
+}

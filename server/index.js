@@ -13,26 +13,31 @@ app.use(express.json());
 app.use(cors());
 
 app.post('/register', async (req, res) => {
-
     const email = req.body.email;
     const password = req.body.password;
 
-    bcrypt.hash(password, saltRounds, (err, hash) => {
-        if (err) {
-            console.log(err);
+    try {
+        const [result] = await db.query('SELECT * FROM test_table WHERE email = ?;', [email]);
+
+        if (result.length > 0) {
+            return res.send({message: 'Email already exists.'});
         }
 
-        db.query(
-            'INSERT INTO test_table (email, password) VALUES (?, ?)', 
-            [email, hash], 
-            (err, result) => {
-                if(err) res.send({err: err});
-        
-                if(result) res.send(result); 
-                else res.send({message: 'Failed to insert data.'});
-            }
-        );
-    });
+        bcrypt.hash(password, saltRounds, async (err, hash) => {
+            if (err) console.log(err);
+    
+            const [result] = await db.query('INSERT INTO test_table (email, password) VALUES (?, ?)', [email, hash]);
+            
+            if(result) res.send(result); 
+            else res.send({message: 'Failed to insert data.'});
+        });
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+
+    
 });
 
 app.post('/login', async (req, res) => {
@@ -40,27 +45,25 @@ app.post('/login', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    db.query(
-        'SELECT * FROM test_table WHERE email = ?;', 
-        [email], 
-        (err, result) => {
-            if(err) res.send({err: err});
-    
-            if(result.length > 0) {
-                bcrypt.compare(password, result[0].password, (error, response) => {
-                    if(response) {
-                        res.send(result);
-                    }
-                    else {
-                        res.send({message: 'Wrong email/password combination.'});
-                    }
-                });
+    try {
+        const [result] = await db.query('SELECT * FROM test_table WHERE email = ?;', [email]);
+
+        if(result.length > 0) {
+            const passwordMatch = await bcrypt.compare(password, result[0].password);
+            if(passwordMatch) {
+                res.send(passwordMatch ? result[0] : {message: 'Wrong email/password combination.'});
             }
             else {
-                res.send({message: 'Wrong email/password combination.'}); // In this case, user DNE. We don't want to say that though.
+                res.send({message: 'Wrong email/password combination.'});
             }
         }
-    );
+        else {
+            res.send({message: 'Wrong email/password combination.'}); // In this case, user DNE. We don't want to say that though.
+        }
+    } catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });;
+    }
 });
 
 app.use((err, req, res, next) => {
