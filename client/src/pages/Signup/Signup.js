@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
@@ -13,6 +14,7 @@ export default function Signup() {
     
     const [signinStatus, setSigninStatus] = useState(" "); // This is an white-space char, so the auto height still considers it.
 
+    let navigate = useNavigate();
 	axios.defaults.withCredentials = true;
 
     const register = () => {
@@ -25,8 +27,19 @@ export default function Signup() {
 			email: email,
 			password: password,
 		})
-		.then((response) => {
+		.then(async (response) => {
 			setSigninStatus(response.data.message ?? " ");
+			if(response.data.message != "Email already exists.") { // This is super janky but it works?
+				await axios.post("http://localhost:5000/login", {
+					email: email,
+					password: password,
+				})
+				.then((response2) => {
+					if(response2.data.email) navigate("/dashboard");
+				})
+				.catch((error) => {
+				});
+			}	
 		})
 		.catch((error) => {
 			console.error("There was an error with the registration request:", error);

@@ -6,11 +6,12 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
-const db = require('./db.js');
+const { db, db_options } = require('./db.js');
 
 const app = express();
 
@@ -20,16 +21,19 @@ app.use(cors({
     methods: ['GET', 'POST'],
     credentials: true
 }));
-app.use(cookieParser());
+
 app.use(bodyParser.urlencoded({ extended: true }));
+
+const sessionStore = new MySQLStore(db_options);
 
 app.use(session({
     key: 'userId',
     secret: process.env.SECRET,
-    resave: false,
+    store: sessionStore,
+    resave: true,
     saveUninitialized: false,
     cookie: {
-        expires: 60 * 60 * 24 // 24 hours
+        expires: 1000 * 60 * 60 * 24 // 24 hours
     }
 }));
 
@@ -61,6 +65,23 @@ app.post('/register', async (req, res) => {
     
 });
 
+app.post('/logout', (req, res) => {
+    if (req.session.user) {
+        req.session.destroy(err => {
+            if (err) {
+                console.log("1");
+                return res.status(500).send({ message: 'Failed to log out.' });
+            }
+            console.log("2");
+            res.clearCookie('userId');
+            return res.send({ message: 'Logged out successfully.' });
+        });
+    } else {
+        console.log("3");
+        return res.status(400).send({ message: 'No user to log out.' });
+    }
+});
+
 app.get('/login', (req, res) => {
     if(req.session.user) {
         res.send({loggedIn: true, user: req.session.user});
@@ -81,7 +102,6 @@ app.post('/login', async (req, res) => {
             const passwordMatch = await bcrypt.compare(password, result[0].password);
             if(passwordMatch) {
                 req.session.user = result[0];
-                console.log(req.session.user);
                 res.send(result[0]);
             }
             else {

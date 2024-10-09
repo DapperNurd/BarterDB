@@ -28,7 +28,6 @@ export default function Signin() {
 			password: password,
 		})
 		.then((response) => {
-			console.log(response);
 			setLoginStatus(response.data.message ?? response.data.email);
 		})
 		.catch((error) => {

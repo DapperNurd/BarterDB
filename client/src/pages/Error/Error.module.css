@@ -1,7 +1,8 @@
-.Error {
-    background: linear-gradient(130deg, rgb(221, 47, 35) 40%, rgb(202, 12, 101) 60%);
+.main {
+    background: linear-gradient(130deg, var(--primary-color) 40%, rgb(221, 6, 139) 60%);
     background-clip: text;
     color: transparent;
+    align-self: center;
     text-align: center;
-    font-size: 1.8rem;
+    font-size: 1.6rem;
 }

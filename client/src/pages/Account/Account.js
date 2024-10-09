@@ -1,14 +1,15 @@
 import Header from "../../components/Header/Header";
 import Footer from "../../components/Footer/Footer";
 
-import styles from "./Contact.module.css";
+import styles from "./Account.module.css";
 
-export default function Contact() {
+export default function Account() {
+
     return (
         <>
             <Header />
             <main className={"main " + styles.main}>
-                <h1>Contact</h1>
+                <h1>Account Settings</h1>
             </main>
             <Footer />
         </>
