@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import Basic_Header from "../../components/Header/Basic_Header";
+import BasicHeader from "../../components/Header/BasicHeader";
 import Footer from "../../components/Footer/Footer";
 
 import styles from "./Signin.module.css";
@@ -51,7 +51,7 @@ export default function Signin(props) {
 
     return (
         <>
-            <Basic_Header />
+            <BasicHeader />
             <main className={styles.main}>
 				<div className={styles.section}>
 					<div className={styles.header}>

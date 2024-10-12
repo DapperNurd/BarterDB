@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 
-import Basic_Header from "../../components/Header/Basic_Header";
+import BasicHeader from "../../components/Header/BasicHeader";
 import Footer from "../../components/Footer/Footer";
 
 // Note that this shares styles with Signin.js
@@ -30,7 +30,7 @@ export default function Signup(props) {
 		})
 		.then(async (response) => {
 			setSigninStatus(response.data.message ?? " ");
-			if(response.data.message != "Email already exists.") { // This is super janky but it works?
+			if(response.data.message !== "Email already exists.") { // This is super janky but it works?
 				await axios.post("http://localhost:5000/api/login", {
 					email: email,
 					password: password,
@@ -52,7 +52,7 @@ export default function Signup(props) {
 
     return (
         <>
-            <Basic_Header />
+            <BasicHeader />
             <main className={styles.main}>
 				<div className={styles.section}>
 				<div className={styles.header}>
