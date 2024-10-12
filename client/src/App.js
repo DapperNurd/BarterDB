@@ -21,7 +21,7 @@ function App() {
     useEffect(() => {
 		const getLoginStatus = async () => {
 			try {
-				const response = await axios.get("http://localhost:5000/login");
+				const response = await axios.get("http://localhost:5000/api/login");
 				setUser(response.data.user);
 				setIsLoading(false);
 			}
@@ -41,7 +41,7 @@ function App() {
 				<Routes>
 					<Route index element={<Home user={user} setUser={setUser}/>} />
 					<Route path="/home" element={<Home user={user} setUser={setUser} />} />
-					<Route path="/signin" element={user ? <Navigate to="/dashboard"/> : <Signin  user={user} setUser={setUser}/>} />
+					<Route path="/login" element={user ? <Navigate to="/dashboard"/> : <Signin  user={user} setUser={setUser}/>} />
 					<Route path="/signup" element={user ? <Navigate to="/dashboard"/> : <Signup user={user} setUser={setUser} />} />
 					<Route path="/dashboard" element={user ? <Dashboard user={user} setUser={setUser} /> : <Navigate to="/"/>} />
 					<Route path="/account" element={user ? <Account user={user} setUser={setUser} /> : <Navigate to="/"/>} />

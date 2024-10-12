@@ -25,7 +25,7 @@ export default function Signin(props) {
 			return;
 		}
 
-		await axios.post("http://localhost:5000/login", {
+		await axios.post("http://localhost:5000/api/login", {
 			email: email,
 			password: password,
 		}, { withCredentials: true })
@@ -42,7 +42,7 @@ export default function Signin(props) {
     }
 
 	useEffect(() => {
-		axios.get("http://localhost:5000/login").then((response) => {
+		axios.get("http://localhost:5000/api/login").then((response) => {
 			if(response.data.loggedIn === true) {
 				setLoginStatus(response.data.user.email);
 			}
@@ -55,7 +55,7 @@ export default function Signin(props) {
             <main className={styles.main}>
 				<div className={styles.section}>
 					<div className={styles.header}>
-						<h1>Sign In</h1>
+						<h1>Login</h1>
 						<div className={styles.status}>{loginStatus}</div>
 					</div>
 
@@ -77,9 +77,9 @@ export default function Signin(props) {
 						}} 
 					/>
 
-					<button onClick={login}>Sign In</button>
+					<button onClick={login}>Login</button>
 					
-					<div className={styles.link}><Link to="/signup">Create an Account</Link></div>
+					<div className={styles.link}><Link to="/signup">Don't have an account? Sign up</Link></div>
 				</div>
             </main>
             <Footer />

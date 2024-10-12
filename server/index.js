@@ -38,7 +38,7 @@ app.use(session({
     }
 }));
 
-app.post('/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
@@ -64,7 +64,7 @@ app.post('/register', async (req, res) => {
     }
 });
 
-app.get('/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
     if (req.session.user) {
         req.session.destroy(err => {
             if (err) {
@@ -82,7 +82,7 @@ app.get('/logout', (req, res) => {
     }
 });
 
-app.get('/login', (req, res) => {
+app.get('/api/login', (req, res) => {
     if(req.session.user) {
         res.send({loggedIn: true, user: req.session.user});
     }
@@ -90,7 +90,7 @@ app.get('/login', (req, res) => {
         res.send({loggedIn: false});
     }
 });
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
 
     const email = req.body.email;
     const password = req.body.password;

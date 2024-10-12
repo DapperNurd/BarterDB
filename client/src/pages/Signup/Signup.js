@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 import Basic_Header from "../../components/Header/Basic_Header";
 import Footer from "../../components/Footer/Footer";
 
-import styles from "./Signup.module.css";
+// Note that this shares styles with Signin.js
+import styles from "../Signin/Signin.module.css";
 
 export default function Signup(props) {
 
@@ -23,14 +24,14 @@ export default function Signup(props) {
 			return;
 		}
 
-		axios.post("http://localhost:5000/register", {
+		axios.post("http://localhost:5000/api/register", {
 			email: email,
 			password: password,
 		})
 		.then(async (response) => {
 			setSigninStatus(response.data.message ?? " ");
 			if(response.data.message != "Email already exists.") { // This is super janky but it works?
-				await axios.post("http://localhost:5000/login", {
+				await axios.post("http://localhost:5000/api/login", {
 					email: email,
 					password: password,
 				})
@@ -78,6 +79,8 @@ export default function Signup(props) {
 					/>
 
 					<button onClick={register}>Register</button>
+
+					<div className={styles.link}><Link to="/signin">Already have an account? Login</Link></div>
 				</div>
             </main>
             <Footer />

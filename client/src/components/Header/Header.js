@@ -16,9 +16,9 @@ export default function Header({user, setUser}) {
     const [showMenu, setShowMenu] = useState(false);
 
     const signout = () => {
-        axios.get("http://localhost:5000/logout").then((response) => {
+        axios.get("http://localhost:5000/api/logout").then((response) => {
             setUser(null);
-            navigate("/signin");
+            navigate("/login");
         });
     }
 
@@ -34,7 +34,7 @@ export default function Header({user, setUser}) {
         </div>
             {showMenu && <div className={headerButtonsStyles.account_submenu}>
             <Link to="/account">Settings</Link>
-            <button to="/signout" onClick={signout}>Sign Out</button>
+            <button to="/signout" onClick={signout}>Logout</button>
         </div>}
     </div>
 
@@ -52,7 +52,7 @@ export default function Header({user, setUser}) {
             </nav>
 
             <div className={headerButtonsStyles.header_buttons}>
-                {!user && <Link to="/signin" className={headerButtonsStyles.header_button}>Sign In</Link>}
+                {!user && <Link to="/login" className={headerButtonsStyles.header_button}>Login</Link>}
                 {user && accountIcon}
             </div>
         </header>
