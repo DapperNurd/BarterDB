@@ -5,6 +5,8 @@
     --primary-color: #ff0000;
     --secondary-color: #003cff;
     --error-color: rgb(255, 141, 141);
+
+    --header-height: 120px;
 }
 
 * { /* Removes default margin and padding on all elements */
@@ -22,9 +24,11 @@ body {
 .container {
     min-height: 100vh;
     display: grid;
-    grid-template-rows: auto 1fr auto;
+    grid-template-rows: var(--header-height) 1fr auto;
 }
 
 .main {
     padding: 3rem;
+
+    grid-row: 2;
 }

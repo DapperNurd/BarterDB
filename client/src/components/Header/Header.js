@@ -8,29 +8,17 @@ import headerButtonsStyles from './Header_Buttons.module.css';
 
 import avatarImg from '../../images/avatar.png';
 
-export default function Header() {
+export default function Header({user, setUser}) {
 
     let navigate = useNavigate();
     axios.defaults.withCredentials = true;
 
-    const [loginStatus, setLoginStatus] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
 
-    useEffect(() => {
-        axios.get("http://localhost:5000/login").then((response) => {
-			setLoginStatus(response.data.loggedIn);
-        })
-        .then((response) => {
-			console.log("got response:" + response);
-		})
-		.catch((error) => {
-			console.error("There was an error with the login request:", error);
-		});
-    });
-
     const signout = () => {
-        axios.post("http://localhost:5000/logout").then((response) => {
-            navigate("/dashboard");
+        axios.get("http://localhost:5000/logout").then((response) => {
+            setUser(null);
+            navigate("/signin");
         });
     }
 
@@ -59,13 +47,13 @@ export default function Header() {
             <nav className={navStyles.nav}>
                 <ul>
                     <li key="home"><Link to="/">Home</Link></li>
-                    {loginStatus && <li key="dashboard"><Link to="/dashboard">Dashboard</Link></li>}
+                    {user && <li key="dashboard"><Link to="/dashboard">Dashboard</Link></li>}
                 </ul>
             </nav>
 
             <div className={headerButtonsStyles.header_buttons}>
-                {!loginStatus && <Link to="/signin" className={headerButtonsStyles.header_button}>Sign In</Link>}
-                {loginStatus && accountIcon}
+                {!user && <Link to="/signin" className={headerButtonsStyles.header_button}>Sign In</Link>}
+                {user && accountIcon}
             </div>
         </header>
     );

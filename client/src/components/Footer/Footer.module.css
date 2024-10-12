@@ -3,4 +3,6 @@
     color: white;
     text-align: center;
     padding: 25px;
+
+    grid-row: 3;
 }

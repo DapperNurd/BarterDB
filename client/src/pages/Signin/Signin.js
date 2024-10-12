@@ -1,20 +1,22 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-import Header from "../../components/Header/Header";
+import Basic_Header from "../../components/Header/Basic_Header";
 import Footer from "../../components/Footer/Footer";
 
 import styles from "./Signin.module.css";
 
 import { Link } from 'react-router-dom';
 
-export default function Signin() {
+export default function Signin(props) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
     const [loginStatus, setLoginStatus] = useState(" "); // This is an white-space char, so the auto height still considers it.
-    
+
+	let navigate = useNavigate();
 	axios.defaults.withCredentials = true;
 
     const login = async () => {
@@ -26,9 +28,13 @@ export default function Signin() {
 		await axios.post("http://localhost:5000/login", {
 			email: email,
 			password: password,
-		})
+		}, { withCredentials: true })
 		.then((response) => {
 			setLoginStatus(response.data.message ?? response.data.email);
+			if(response.data.email) {
+				props.setUser(response.data);
+				navigate("/dashboard");
+			}
 		})
 		.catch((error) => {
 			setLoginStatus(" ");
@@ -45,7 +51,7 @@ export default function Signin() {
 
     return (
         <>
-            <Header />
+            <Basic_Header />
             <main className={styles.main}>
 				<div className={styles.section}>
 					<div className={styles.header}>

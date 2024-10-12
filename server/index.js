@@ -23,14 +23,15 @@ app.use(cors({
 }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const sessionStore = new MySQLStore(db_options);
 
 app.use(session({
-    key: 'userId',
+    key: 'user',
     secret: process.env.SECRET,
     store: sessionStore,
-    resave: true,
+    resave: false,
     saveUninitialized: false,
     cookie: {
         expires: 1000 * 60 * 60 * 24 // 24 hours
@@ -61,11 +62,9 @@ app.post('/register', async (req, res) => {
         console.error("Error occurred:", err);
         return res.status(500).send({ err: err });
     }
-
-    
 });
 
-app.post('/logout', (req, res) => {
+app.get('/logout', (req, res) => {
     if (req.session.user) {
         req.session.destroy(err => {
             if (err) {
@@ -73,7 +72,8 @@ app.post('/logout', (req, res) => {
                 return res.status(500).send({ message: 'Failed to log out.' });
             }
             console.log("2");
-            res.clearCookie('userId');
+            res.clearCookie('user');
+            req.session = null;
             return res.send({ message: 'Logged out successfully.' });
         });
     } else {
@@ -102,7 +102,8 @@ app.post('/login', async (req, res) => {
             const passwordMatch = await bcrypt.compare(password, result[0].password);
             if(passwordMatch) {
                 req.session.user = result[0];
-                res.send(result[0]);
+                req.session.save();
+                return res.send(result[0]);
             }
             else {
                 res.send({message: 'Wrong email/password combination.'});

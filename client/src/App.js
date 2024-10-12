@@ -15,14 +15,14 @@ function App() {
 
 	axios.defaults.withCredentials = true;
 
-    const [loginStatus, setLoginStatus] = useState(false);
+    const [user, setUser] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
 		const getLoginStatus = async () => {
 			try {
 				const response = await axios.get("http://localhost:5000/login");
-				setLoginStatus(response.data.loggedIn);
+				setUser(response.data.user);
 				setIsLoading(false);
 			}
 			catch(err) {
@@ -39,12 +39,12 @@ function App() {
 		<>
 			<div className="container">
 				<Routes>
-					<Route index element={<Home />} />
-					<Route path="/home" element={<Home />} />
-					<Route path="/signin" element={loginStatus ? <Navigate to="/dashboard"/> : <Signin />} />
-					<Route path="/signup" element={loginStatus ? <Navigate to="/dashboard"/> : <Signup />} />
-					<Route path="/dashboard" element={loginStatus ? <Dashboard /> : <Navigate to="/"/>} />
-					<Route path="/account" element={loginStatus ? <Account /> : <Navigate to="/"/>} />
+					<Route index element={<Home user={user} setUser={setUser}/>} />
+					<Route path="/home" element={<Home user={user} setUser={setUser} />} />
+					<Route path="/signin" element={user ? <Navigate to="/dashboard"/> : <Signin  user={user} setUser={setUser}/>} />
+					<Route path="/signup" element={user ? <Navigate to="/dashboard"/> : <Signup user={user} setUser={setUser} />} />
+					<Route path="/dashboard" element={user ? <Dashboard user={user} setUser={setUser} /> : <Navigate to="/"/>} />
+					<Route path="/account" element={user ? <Account user={user} setUser={setUser} /> : <Navigate to="/"/>} />
 					<Route path="*" element={<Error />} />
 				</Routes>
 			</div>

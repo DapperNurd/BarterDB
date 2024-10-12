@@ -6,11 +6,11 @@ import { useEffect, useState } from "react";
 import { Navigate  } from 'react-router-dom';
 import axios from 'axios';
 
-export default function Dashboard() {
+export default function Dashboard(props) {
 
     return (
         <>
-            <Header />
+            <Header user={props.user} setUser={props.setUser} />
             <main className={"main " + styles.main}>
                 <h1>Dashboard</h1>
             </main>

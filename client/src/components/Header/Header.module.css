@@ -4,7 +4,7 @@
     grid-template-areas: "title nav buttons";
     align-items: center;
 
-    height: 120px;
+    height: var(-header-height);
 
     padding: 0 3rem;
 
