@@ -28,7 +28,7 @@ app.use(cookieParser());
 const sessionStore = new MySQLStore(db_options);
 
 app.use(session({
-    key: 'user',
+    key: 'userId',
     secret: process.env.SECRET,
     store: sessionStore,
     resave: false,
@@ -38,12 +38,79 @@ app.use(session({
     }
 }));
 
+app.post('/api/getuser', async (req, res) => {
+    const userId = req.body.userId;
+
+    try {
+        const [result] = await db.query('SELECT user_id, email, access_level FROM user WHERE user_id = ?;', [userId]);
+
+        if (result.length > 0) {
+            return res.send({user: result[0]});
+        }
+        else {
+            res.send({message: 'User with associated ID does not exist.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
+app.post('/api/getposts', async (req, res) => {
+    const userId = req.body.userId;
+
+    try { // This gets all posts associated with the userId, and also gets the item names associating with the post item id's (just so we don't have to query again later)
+        const [result] = await db.query(`SELECT p.*, 
+                                            i1.name AS requesting_item_name, 
+                                            i2.name AS offering_item_name
+                                        FROM barterdb.post p
+                                        JOIN barterdb.item i1 ON p.requesting_item_id = i1.item_id
+                                        JOIN barterdb.item i2 ON p.offering_item_id = i2.item_id
+                                        WHERE p.posting_partnership_id IN 
+                                            (SELECT partnership_id 
+                                            FROM barterdb.partnership 
+                                            WHERE user1_id = ? OR user2_id = ?);
+                                        `, [userId, userId]);
+
+        if (result.length > 0) {
+            return res.send({posts: result});
+        }
+        else {
+            res.send({message: 'User does not have any posts.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
+app.get('/api/getitems', async (req, res) => {
+    const userId = req.body.userId;
+
+    try { // This gets all posts associated with the userId, and also gets the item names associating with the post item id's (just so we don't have to query again later)
+        const [result] = await db.query('SELECT * FROM item');
+
+        if (result.length > 0) {
+            return res.send({items: result});
+        }
+        else {
+            res.send({message: 'No items found.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
 app.post('/api/register', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
 
     try {
-        const [result] = await db.query('SELECT * FROM test_table WHERE email = ?;', [email]);
+        const [result] = await db.query('SELECT * FROM user WHERE email = ?;', [email]);
 
         if (result.length > 0) {
             return res.send({message: 'Email already exists.'});
@@ -52,7 +119,7 @@ app.post('/api/register', async (req, res) => {
         bcrypt.hash(password, saltRounds, async (err, hash) => {
             if (err) console.log(err);
     
-            const [result] = await db.query('INSERT INTO test_table (email, password) VALUES (?, ?)', [email, hash]);
+            const [result] = await db.query('INSERT INTO user (email, password) VALUES (?, ?)', [email, hash]);
             
             if(result) res.send(result); 
             else res.send({message: 'Failed to insert data.'});
@@ -65,7 +132,7 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.get('/api/logout', (req, res) => {
-    if (req.session.user) {
+    if (req.session.userId) {
         req.session.destroy(err => {
             if (err) {
                 console.log("1");
@@ -83,8 +150,8 @@ app.get('/api/logout', (req, res) => {
 });
 
 app.get('/api/login', (req, res) => {
-    if(req.session.user) {
-        res.send({loggedIn: true, user: req.session.user});
+    if(req.session.userId) {
+        res.send({loggedIn: true, userId: req.session.userId});
     }
     else {
         res.send({loggedIn: false});
@@ -96,14 +163,14 @@ app.post('/api/login', async (req, res) => {
     const password = req.body.password;
 
     try {
-        const [result] = await db.query('SELECT * FROM test_table WHERE email = ?;', [email]);
+        const [result] = await db.query('SELECT * FROM user WHERE email = ?;', [email]);
 
         if(result.length > 0) {
             const passwordMatch = await bcrypt.compare(password, result[0].password);
             if(passwordMatch) {
-                req.session.user = result[0];
+                req.session.userId = result[0].user_id;
                 req.session.save();
-                return res.send(result[0]);
+                return res.send({userId: result[0].user_id});
             }
             else {
                 res.send({message: 'Wrong email/password combination.'});

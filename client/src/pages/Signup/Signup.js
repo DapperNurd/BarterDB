@@ -35,9 +35,12 @@ export default function Signup(props) {
 					email: email,
 					password: password,
 				})
-				.then((response2) => {
-					if(response2.data.email) {
-						props.setUser(response.data);
+				.then(async (response2) => {
+					if(!response2.data.message) {
+						const user = await axios.post("http://localhost:5000/api/getuser", { userId: response2.data.userId });
+						if(!user.data.message) {
+							props.setUser(user.data.user);
+						}
 						navigate("/dashboard");
 					}
 				})
@@ -80,7 +83,7 @@ export default function Signup(props) {
 
 					<button onClick={register}>Register</button>
 
-					<div className={styles.link}><Link to="/signin">Already have an account? Login</Link></div>
+					<div className={styles.link}><Link to="/login">Already have an account? Login</Link></div>
 				</div>
             </main>
             <Footer />

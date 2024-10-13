@@ -3,7 +3,6 @@ import axios, { isCancel } from 'axios';
 import { NavLink, useNavigate } from 'react-router-dom';
 
 import headerStyles from './Header.module.css';
-import navStyles from './Nav.module.css';
 import headerButtonsStyles from './Header_Buttons.module.css';
 
 export default function Header({user, setUser}) {
@@ -42,13 +41,6 @@ export default function Header({user, setUser}) {
             <div className={headerStyles.title}>
                 <NavLink to="/" className={headerStyles.header_logo}>BarterDB</NavLink>
             </div>
-
-            {/* Navigation */}
-            <nav className={navStyles.nav}>
-                <ul>
-                    {user && <li key="dashboard"><NavLink to="/dashboard">Dashboard</NavLink></li>}
-                </ul>
-            </nav>
 
             {/* Buttons */}
             <div className={headerButtonsStyles.header_buttons}>

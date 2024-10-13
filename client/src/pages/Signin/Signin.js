@@ -29,10 +29,13 @@ export default function Signin(props) {
 			email: email,
 			password: password,
 		}, { withCredentials: true })
-		.then((response) => {
-			setLoginStatus(response.data.message ?? response.data.email);
-			if(response.data.email) {
-				props.setUser(response.data);
+		.then(async (response) => {
+			setLoginStatus(response.data.message ?? response.data.userId);
+			if(!response.data.message) {
+				const user = await axios.post("http://localhost:5000/api/getuser", { userId: response.data.userId });
+				if(!user.data.message) {
+					props.setUser(user.data.user);
+				}
 				navigate("/dashboard");
 			}
 		})
@@ -44,7 +47,7 @@ export default function Signin(props) {
 	useEffect(() => {
 		axios.get("http://localhost:5000/api/login").then((response) => {
 			if(response.data.loggedIn === true) {
-				setLoginStatus(response.data.user.email);
+				setLoginStatus(response.data.userId);
 			}
 		});
 	}, []);

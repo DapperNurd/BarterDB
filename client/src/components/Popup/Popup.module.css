@@ -1,0 +1,84 @@
+button {
+    width: calc(100% - (var(--post_padding) * 2));
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    text-align: left;
+}
+
+.close_button {
+    width: auto;
+    height: 30px;
+    text-align: center;
+
+    position: absolute;
+
+    right: 22px;
+    top: 22px;
+}
+
+.close_button img:hover {
+    filter: brightness(50%) sepia(100) saturate(100) hue-rotate(25deg);
+}
+
+.popup_bg {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background-color: rgba(0, 0, 0, 0.5);
+
+    z-index: 9;
+}
+
+.popup_bg:hover {
+    cursor: default;
+}
+
+.popup {
+    min-width: 300px;
+
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+
+    position: absolute;
+
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+
+    text-shadow: 2px 2px black;
+
+    border: 1px solid white;
+    border-radius: 10px;
+
+    z-index: 10;
+
+    padding: 20px;
+}
+
+.popup h2 {
+    padding-bottom: 15px;
+}
+
+.popup p {
+    padding-bottom: 10px;
+}
+
+.popup p:last-child {
+    padding-bottom: 0;
+
+    color: lightgray;
+}
+
+time {
+    font-style: italic;
+    padding-left: 3px;
+}
