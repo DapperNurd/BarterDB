@@ -44,6 +44,7 @@ button {
 
 .popup {
     min-width: 300px;
+    max-width: 600px;
 
     top: 50%;
     left: 50%;

@@ -1,0 +1,96 @@
+.main{ 
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    /* gap: 10px; */
+}
+
+.main h1 {
+    padding: 15px 0;
+}
+
+.partner_section {
+    padding-bottom: 40px;
+}
+
+.popup_msg {
+    font-weight: normal;
+}
+
+.remove_button {
+    width: auto;
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid var(--error-color);
+    border-radius: 10px;
+}
+
+.remove_button:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: var(--error-color);
+    transition: 0.1s;
+}
+
+.requests_section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.add_request_button, .send_button {
+    width: auto;
+    margin-top: 15px;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
+.add_request_button:hover, .send_button:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+    transition: 0.1s;
+}
+
+.request {
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.request:first-of-type {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.request:last-of-type {
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+
+.popup_title {
+    width: 400px;
+}
+
+.request_popup label, .request_popup input {
+    width: 100%;
+    display: block;
+    margin-bottom: 5px
+}
+
+.request_popup input {
+    padding: 5px;
+}
+
+.error_message {
+    color: var(--error-color);
+    margin-bottom: 18px;
+}
+.error_message:empty { display: none; }
+
+.required::after {
+    content: '*';
+    padding-left: 4px;
+    color: var(--error-color);
+}
+
+.highlight {
+    font-weight: bold;
+    font-style: italic;
+}

@@ -25,14 +25,14 @@ export default function Signin(props) {
 			return;
 		}
 
-		await axios.post("http://localhost:5000/api/login", {
+		await axios.post("http://localhost:5000/users/login", {
 			email: email,
 			password: password,
 		}, { withCredentials: true })
 		.then(async (response) => {
 			setLoginStatus(response.data.message ?? response.data.userId);
 			if(!response.data.message) {
-				const user = await axios.post("http://localhost:5000/api/getuser", { userId: response.data.userId });
+				const user = await axios.post("http://localhost:5000/users/getuser", { userId: response.data.userId });
 				if(!user.data.message) {
 					props.setUser(user.data.user);
 				}
@@ -45,7 +45,7 @@ export default function Signin(props) {
     }
 
 	useEffect(() => {
-		axios.get("http://localhost:5000/api/login").then((response) => {
+		axios.get("http://localhost:5000/users/login").then((response) => {
 			if(response.data.loggedIn === true) {
 				setLoginStatus(response.data.userId);
 			}

@@ -1,0 +1,88 @@
+.main{ 
+    display: grid;
+    grid-template-columns: 1fr 5fr;
+    /* gap: 10px; */
+}
+
+.main h1 {
+    padding: 15px 0;
+}
+
+.main p {
+    padding: 15px 0px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    display: grid;
+    grid-template-columns: 100px 1fr;
+}
+
+.account_status {
+    color: lightgray;
+    font-style: italic;
+    padding: 15px 0px;
+}
+
+section {
+    width: 100%;
+    padding: 15px;
+    padding-right: 100px;
+}
+
+.button {
+    width: auto;
+    padding: 10px;
+    margin: 10px 10px 10px 0;
+    /* background-color: var(--secondary-color); */
+    border: 1px solid white;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.edit_button {
+    margin-top: 5px;
+}
+
+.save_button {
+    border: 1px solid var(--secondary-color);
+}
+
+.button:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+    transition: 0.1s;
+}
+
+.popup_button {
+    margin: 0;
+    margin-top: 5px;
+}
+
+.popup_section {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 15px;
+
+    padding-bottom: 10px;
+}
+
+.button_group {
+    display:flex;
+    justify-content: space-between;
+}
+
+.error_message {
+    color: var(--error-color);
+    margin-bottom: 18px;
+}
+.error_message:empty { display: none; }
+
+.required::after {
+    content: '*';
+    padding-left: 4px;
+    color: var(--error-color);
+}
+
+.not_set {
+    color: lightgray;
+    font-style: italic;
+}

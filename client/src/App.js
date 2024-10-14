@@ -11,7 +11,8 @@ import Dashboard from './pages/Dashboard/Main/Dashboard';
 import ActiveDashboard from './pages/Dashboard/Active/ActiveDashboard';
 import HistoryDashboard from './pages/Dashboard/History/HistoryDashboard';
 import PostsDashboard from './pages/Dashboard/Posts/PostsDashboard';
-import Account from './pages/Account/Account';
+import AccountSettings from './pages/AccountSettings/AccountSettings';
+import AccountPartnership from './pages/AccountPartnership/AccountPartnership';
 import Error from './pages/Error/Error';
 
 function App() {
@@ -27,8 +28,8 @@ function App() {
 				// Basically, the session stores two values: whether they are logged in, and if so, their userId.
 				// Then, we use that userId to get the user's info from the database.
 				// This is so info that might change on a whim is not saved in the otherwise static session.
-				const session = await axios.get("http://localhost:5000/api/login");
-				const user = await axios.post("http://localhost:5000/api/getuser", { userId: session.data.userId });
+				const session = await axios.get("http://localhost:5000/users/login");
+				const user = await axios.post("http://localhost:5000/users/getuser", { userId: session.data.userId });
 				if(!user.data.message) {
 					setUser(user.data.user);
 				}
@@ -56,7 +57,8 @@ function App() {
 					<Route path="/dashboard/posts" element={user ? <PostsDashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="/dashboard/active" element={user ? <ActiveDashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="/dashboard/history" element={user ? <HistoryDashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
-					<Route path="/account" element={user ? <Account user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
+					<Route path="/account" element={user ? <AccountSettings user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
+					<Route path="/account/partnership" element={user ? <AccountPartnership user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="*" element={<Error />} />
 				</Routes>
 			</div>

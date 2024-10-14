@@ -13,12 +13,9 @@ export default function DashboardSidebar(props) {
     const [showPopup, setShowPopup] = useState(false);
     const [items, setItems] = useState([]);
 
-    // This is just a debug thing so you don't have to physically update the database everytime.
-    // user.access_level = 1;
-
     useEffect(() => {
         const signout = async () => {
-            const response = await axios.get("http://localhost:5000/api/getitems");
+            const response = await axios.get("http://localhost:5000/posts/getitems");
             if(!response.data.message) {
                 setItems(response.data.items);
             }

@@ -24,20 +24,20 @@ export default function Signup(props) {
 			return;
 		}
 
-		axios.post("http://localhost:5000/api/register", {
+		axios.post("http://localhost:5000/users/register", {
 			email: email,
 			password: password,
 		})
 		.then(async (response) => {
 			setSigninStatus(response.data.message ?? " ");
 			if(response.data.message !== "Email already exists.") { // This is super janky but it works?
-				await axios.post("http://localhost:5000/api/login", {
+				await axios.post("http://localhost:5000/users/login", {
 					email: email,
 					password: password,
 				})
 				.then(async (response2) => {
 					if(!response2.data.message) {
-						const user = await axios.post("http://localhost:5000/api/getuser", { userId: response2.data.userId });
+						const user = await axios.post("http://localhost:5000/users/getuser", { userId: response2.data.userId });
 						if(!user.data.message) {
 							props.setUser(user.data.user);
 						}

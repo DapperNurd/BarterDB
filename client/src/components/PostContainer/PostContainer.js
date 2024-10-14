@@ -14,25 +14,16 @@ export default function PostContainer(props) {
 
     useEffect(() => {
         const populatePosts = async () => {
-            const response = await axios.post("http://localhost:5000/api/getposts", { userId: props.user.user_id });
+            const response = await axios.post("http://localhost:5000/posts/getposts", { userId: props.user.user_id });
             if(!response.data.message) {
                 setPosts(response.data.posts);
             }
             else {
-                setPosts(null);
+                setPosts([]);
             }
         }
         populatePosts();
     }, []);
-
-    // props.setData({
-    //     offering: props.data.offering_item_id,
-    //     offeringAmount: props.data.offering_amount,
-    //     requesting: props.data.requesting_item_id,
-    //     requestingAmount: props.data.requesting_amount,
-    //     isNegotiable: props.data.isNegotiable,
-    //     createdAt: props.data.created_at
-    // })
 
     const popup = (
         <Popup trigger={setShowPopup}>

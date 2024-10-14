@@ -13,7 +13,7 @@ export default function Header({user, setUser}) {
     const [showMenu, setShowMenu] = useState(false);
 
     const signout = () => {
-        axios.get("http://localhost:5000/api/logout").then((response) => {
+        axios.get("http://localhost:5000/users/logout").then((response) => {
             setUser(null);
             navigate("/login");
         });
