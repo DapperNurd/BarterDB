@@ -5,13 +5,14 @@ aside {
 
     /* background-color: rgba(255, 255, 255, 0.079); */
     padding: 15px;
+    padding-left: 30px;
 
     position: relative;
 }
 
 .aside_item {
     margin-bottom: 25px;
-    font-size: 1.2rem;
+    font-size: 1.6rem;
     text-shadow: 0 0 0.2em black;
 }
 
@@ -52,7 +53,6 @@ aside button {
 }
 
 aside button:hover {
-    
     text-decoration: underline;
 }
 

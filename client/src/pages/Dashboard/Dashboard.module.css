@@ -1,0 +1,129 @@
+.main{ 
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "header header button"
+                         "dash1 dash2 dash3";
+
+    column-gap: 25px;
+    row-gap: 40px;
+
+    margin: 20px 40px 5px 40px;
+}
+
+.error_message {
+    color: var(--error-color);
+    margin-bottom: 18px;
+}
+.error_message:empty { display: none; }
+
+.dash_header {
+    grid-area: header;
+    align-self: center;
+}
+
+.create_post_button {
+    grid-area: button;
+    justify-self: right;
+    align-self: center;
+}
+
+.create_post_button button {
+    font-size: 1.1rem;
+    width: auto;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 8px;
+}
+
+.dash_header {
+    /* font-size: 2rem; */
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.dashboard h1 {
+    font-size: 1.5rem;
+}
+
+.view_posts {
+    grid-area: dash1;
+}
+
+.my_posts {
+    grid-area: dash2;
+}
+
+.all_posts {
+    grid-area: dash3;
+}
+
+.no_permissions {
+    background-image: linear-gradient(50deg, rgba(255, 238, 0, 0.1), rgba(255, 238, 0, 0.3));
+    border: 1px solid rgba(255, 238, 0);
+    border-radius: 10px;;
+
+    padding: 15px;
+}
+
+.no_permissions div {
+    color:rgba(255, 255, 255, 0.5);
+}
+
+.no_permissions h3{
+    text-shadow: 0 4px 2px black;
+    padding-bottom: 10px;
+}
+
+.no_permissions div:first-child {
+    color: white;
+    font-size: 1.1rem;
+    padding-bottom: 2rem;
+}
+
+.popup_select {
+    border: none;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.popup_section {
+    display: grid;
+    grid-template-columns: 2fr 3fr auto;
+    gap: 15px;
+    padding-bottom: 15px;
+}
+
+.popup_section input {
+    width: 40px;
+    text-align: center;
+    padding-left: 2px;
+}
+
+.popup_section input[type=number]::-webkit-inner-spin-button, 
+.popup_section input[type=number]::-webkit-outer-spin-button {
+  opacity: 1;
+}
+
+.popup_section:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0;
+}
+
+.create_button {
+    width: auto;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 8px;
+}
+
+.create_button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}

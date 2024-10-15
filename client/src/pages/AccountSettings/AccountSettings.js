@@ -35,7 +35,7 @@ export default function Account(props) {
             return;
         }
 
-        const newResponse = await axios.post("http://localhost:5000/users/setuserinfo", { userId: user.user_id, email: email, phone: phone, address: address });
+        const newResponse = await axios.post("http://localhost:5000/users/set-user-info", { userId: user.user_id, email: email, phone: phone, address: address });
         if(newResponse.data.message) {
             setErrorMsg('Failed to update password.');
             return;
@@ -57,13 +57,13 @@ export default function Account(props) {
             return;
         }
 
-        const response = await axios.post("http://localhost:5000/users/comparepassword", { userId: user.user_id, password: currentPassword});
+        const response = await axios.post("http://localhost:5000/users/compare-password", { userId: user.user_id, password: currentPassword});
         if(!response.data.status) {
             setErrorMsg('Current password is incorrect.');
             return;
         }
 
-        const newResponse = await axios.post("http://localhost:5000/users/changeuserpassword", { userId: props.user.user_id, password: newPassword});
+        const newResponse = await axios.post("http://localhost:5000/users/change-user-password", { userId: props.user.user_id, password: newPassword});
         if(newResponse.data.message) {
             setErrorMsg('Failed to update password.');
             return;
@@ -73,7 +73,6 @@ export default function Account(props) {
     }
     
     const GetUserStatus = () => {
-        console.log(user.access_level);
         if(user.access_level < 0) {
             return <div className={styles.account_status}>Account is suspended.</div>
         }
@@ -141,7 +140,7 @@ export default function Account(props) {
             <Header user={props.user} setUser={props.setUser} />
             <main className={styles.main}>
                 <AccountSidebar user={props.user} setUser={props.setUserr} />
-                <section>
+                <section className={styles.section}>
                     <h1>Account Settings</h1>
                     <p><strong>E-mail:</strong> {user.email}</p>
                     <p><strong>Phone:</strong> {!user.phone_number || user.phone_number == '' ? <span className={styles.not_set}>Not set.</span> : user.phone_number}</p>

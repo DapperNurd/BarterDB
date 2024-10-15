@@ -2,7 +2,7 @@
     grid-area: nav;
 
     justify-self: center;
-    width: 50%;
+    width: 100%;
 }
 
 .nav ul {
@@ -10,7 +10,7 @@
     list-style-type: none;
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    gap: 3rem;
 }
 
 .nav ul li {

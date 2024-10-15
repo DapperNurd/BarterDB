@@ -6,7 +6,7 @@ const saltRounds = 10;
 
 const { db, db_options } = require('../db.js');
 
-router.post('/setuserinfo', async (req, res) => {
+router.post('/set-user-info', async (req, res) => {
     const userId = req.body.userId;
     const email = req.body.email;
     const phone = req.body.phone;
@@ -38,7 +38,7 @@ router.post('/setuserinfo', async (req, res) => {
     }
 });
 
-router.post('/comparepassword', async (req, res) => {
+router.post('/compare-password', async (req, res) => {
     const userId = req.body.userId;
     const password = req.body.password;
 
@@ -68,7 +68,7 @@ router.post('/comparepassword', async (req, res) => {
     }
 });
 
-router.post('/changeuserpassword', async (req, res) => {
+router.post('/change-user-password', async (req, res) => {
     const userId = req.body.userId;
     const password = req.body.password;
 
@@ -96,7 +96,7 @@ router.post('/changeuserpassword', async (req, res) => {
     });
 });
 
-router.post('/checkuserexists', async (req, res) => {
+router.post('/check-user-exists', async (req, res) => {
     const userId = req.body.userId;
     const email = req.body.email;
 
@@ -120,7 +120,7 @@ router.post('/checkuserexists', async (req, res) => {
     }
 });
 
-router.post('/getuser', async (req, res) => {
+router.post('/get-user', async (req, res) => {
     const userId = req.body.userId;
 
     // This is a security measure to ensure that the user ID in the session matches the user ID in the request.

@@ -37,13 +37,29 @@
     margin-bottom: var(--post_padding);
 }
 
-.post div {
+.post .post_line {
     padding-bottom: 15px;
+    display: grid;
+    grid-template-columns: 3fr 3fr 1fr;
 }
 
-.item {
+.post_item {
     font-style: italic;
-    color: rgb(210, 113, 255);
+}
+
+.post_amt {
+    margin-right: 5px;
+    justify-self: right;
+}
+
+.offering_item {
+    color: var(--secondary-color);
+    filter: saturate(0.4) brightness(3);
+}
+
+.requesting_item {
+    color: var(--primary-color);
+    filter: saturate(0.2) brightness(3);
 }
 
 .post div:last-child {

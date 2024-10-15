@@ -6,7 +6,7 @@ const saltRounds = 10;
 
 const { db, db_options } = require('../db.js');
 
-router.post('/checkrequestexists', async (req, res) => {
+router.post('/check-request-exists', async (req, res) => {
     const userId = req.body.userId;
     const requestedUserId = req.body.requestedUserId;
 
@@ -26,7 +26,7 @@ router.post('/checkrequestexists', async (req, res) => {
     }
 });
 
-router.post('/createrequest', async (req, res) => {
+router.post('/create-request', async (req, res) => {
     const userId = req.body.userId;
     const requestedUserId = req.body.requestedUserId;
 
@@ -50,7 +50,31 @@ router.post('/createrequest', async (req, res) => {
     }
 });
 
-router.post('/getincomingrequests', async (req, res) => {
+router.post('/delete-request', async (req, res) => {
+    const requestingUserId = req.body.requestingUserId;
+    const requestedUserId = req.body.requestedUserId;
+
+    // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
+    // Basically makes it so you can't just get the user's info by knowing their user ID.
+    if(req.session.userId !== requestingUserId) return res.status(401).send({message: 'User ID does not match session ID.'});
+
+    try {
+        const [result] = await db.query('DELETE FROM partnership_request WHERE requesting_user_id = ? AND requested_user_id = ?', [requestingUserId, requestedUserId]);
+
+        if (result) {
+            return res.send({status: true});
+        }
+        else {
+            return res.send({status: false, message: 'Failed to delete request.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
+router.post('/get-incoming-requests', async (req, res) => {
     const userId = req.body.userId;
 
     try { // This gets all posts associated with the userId, and also gets the item names associating with the post item id's (just so we don't have to query again later)
@@ -80,7 +104,7 @@ router.post('/getincomingrequests', async (req, res) => {
     }
 });
 
-router.post('/getoutgoingrequests', async (req, res) => {
+router.post('/get-outgoing-requests', async (req, res) => {
     const userId = req.body.userId;
 
     try {
@@ -102,6 +126,30 @@ router.post('/getoutgoingrequests', async (req, res) => {
         }
         else {
             res.send({message: 'User does not have any posts.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
+router.post('/clear-all-outgoing-requests', async (req, res) => {
+    const userId = req.body.userDeleting;
+    const clearingUserId = req.body.deletingFor;
+
+    // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
+    // Basically makes it so you can't just get the user's info by knowing their user ID.
+    if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
+
+    try {
+        const [result] = await db.query('DELETE FROM partnership_request WHERE requesting_user_id = ?', [clearingUserId]);
+
+        if (result) {
+            return res.send({status: true});
+        }
+        else {
+            return res.send({status: false, message: 'Failed to clear requests.'});
         }
     }
     catch (err) {

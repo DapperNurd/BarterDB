@@ -37,15 +37,14 @@ export default function Signup(props) {
 				})
 				.then(async (response2) => {
 					if(!response2.data.message) {
-						const user = await axios.post("http://localhost:5000/users/getuser", { userId: response2.data.userId });
+						const user = await axios.post("http://localhost:5000/users/get-user", { userId: response2.data.userId });
 						if(!user.data.message) {
 							props.setUser(user.data.user);
 						}
 						navigate("/dashboard");
 					}
 				})
-				.catch((error) => {
-				});
+				.catch((error) => { });
 			}	
 		})
 		.catch((error) => {

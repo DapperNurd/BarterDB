@@ -1,7 +1,6 @@
 .container {
-    width: 40%;
-    height: 80%;
-    max-height: 70vh;
+    flex: 1;
+    width: 100%;
     border: 1px solid white;
     border-radius: 20px;
 
@@ -16,4 +15,58 @@
     overflow-y: auto;
     /* scrollbar-color: white transparent; */
     /* scrollbar-width: thin; */
+}
+
+.post_popup {
+    width: 375px;
+}
+
+.post_popup p {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.created {
+    color: lightgray;
+}
+
+.error_message {
+    color: var(--error-color);
+    margin-bottom: 18px;
+}
+.error_message:empty { display: none; }
+
+.button {
+    width: auto;
+    font-size: 1.1rem;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
+.delete_button {
+    border: 1px solid rgb(217, 114, 115);
+    transition: 0.1s;
+}
+
+.delete_button:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: rgb(217, 114, 115);
+    transition: 0s;
+}
+
+.edit_button {
+    border: 1px solid rgb(108, 180, 252);
+    transition: 0.1s;
+}
+
+.edit_button:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: rgb(108, 180, 252);
+    transition: 0s;
+}
+
+.button_group {
+    display: flex;
+    justify-content: space-between;
 }

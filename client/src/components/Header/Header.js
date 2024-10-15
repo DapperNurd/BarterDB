@@ -46,7 +46,7 @@ export default function Header({user, setUser}) {
             {/* Navigation */}
             <nav className={navStyles.nav}>
                 <ul>
-                    {user && <li key="dashboard"><NavLink to="/dashboard">Dashboard</NavLink></li>}
+                {user && <li key="dashboard"><NavLink to="/dashboard">Dashboard</NavLink></li>}
                 </ul>
             </nav>
 

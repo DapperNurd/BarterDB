@@ -32,7 +32,7 @@ export default function Signin(props) {
 		.then(async (response) => {
 			setLoginStatus(response.data.message ?? response.data.userId);
 			if(!response.data.message) {
-				const user = await axios.post("http://localhost:5000/users/getuser", { userId: response.data.userId });
+				const user = await axios.post("http://localhost:5000/users/get-user", { userId: response.data.userId });
 				if(!user.data.message) {
 					props.setUser(user.data.user);
 				}
