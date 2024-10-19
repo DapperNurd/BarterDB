@@ -133,7 +133,6 @@ export default function Account(props) {
     }
 
     const RemoveRequest = async (requesting_id, requested_id) => {
-
         const response = await axios.post("http://localhost:5000/requests/delete-request", { requestingUserId: requesting_id, requestedUserId: requested_id });
         if(!response.data.status) {
             setErrorMsg("Error: Failed to remove request.");
@@ -274,7 +273,7 @@ export default function Account(props) {
             <Header user={props.user} setUser={props.setUser} />
             <main className={styles.main}>
                 <AccountSidebar user={props.user} setUser={props.setUserr} />
-                <section>
+                <section className={styles.section}>
                     <h1>Partner</h1>
                     <div className={styles.partner_section}>
                         <p>Current Partner: {partner ? partner.email : "Unassigned."}</p>

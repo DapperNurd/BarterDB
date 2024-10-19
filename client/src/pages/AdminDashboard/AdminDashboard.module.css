@@ -1,0 +1,39 @@
+.main{ 
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+
+    column-gap: 25px;
+    row-gap: 40px;
+}
+
+.error_message {
+    color: var(--error-color);
+    margin-bottom: 18px;
+}
+.error_message:empty { display: none; }
+
+.aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+
+    padding: 0;
+
+    font-size: 1.8rem;
+
+}
+
+.aside a {
+    width: 80%;
+}
+
+aside a:hover {
+    text-decoration: underline;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+}
+
+.section {
+    margin-top: 20px;
+}

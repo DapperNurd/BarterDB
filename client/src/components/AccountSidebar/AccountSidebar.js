@@ -17,12 +17,10 @@ export default function AccountSidebar(props) {
     );
 
     return (
-        <>
-            <aside>
-                {user.access_level <= 0 && noPermissions}
-                {user.access_level > 0 && <div className={styles.aside_item}><NavLink to="/account">Settings</NavLink></div>}
-                {user.access_level > 0 && <div className={styles.aside_item}><NavLink to="/account/partnership">Partnership</NavLink></div>}
-            </aside>
-        </>
+        <aside className={styles.aside}>
+            {user.access_level <= 0 && noPermissions}
+            {user.access_level > 0 && <NavLink to="/account">Settings</NavLink>}
+            {user.access_level > 0 && <NavLink to="/account/partnership">Partnership</NavLink>}
+        </aside>
     );
 }

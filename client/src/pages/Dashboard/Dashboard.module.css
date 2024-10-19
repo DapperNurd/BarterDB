@@ -2,7 +2,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: auto 1fr;
-    grid-template-areas: "header header button"
+    grid-template-areas: "header button button"
                          "dash1 dash2 dash3";
 
     column-gap: 25px;
@@ -20,6 +20,7 @@
 .dash_header {
     grid-area: header;
     align-self: center;
+    text-wrap: nowrap;
 }
 
 .create_post_button {
@@ -34,6 +35,10 @@
     padding: 10px;
     border: 1px solid white;
     border-radius: 8px;
+}
+
+.create_post_button button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .dash_header {
@@ -66,25 +71,50 @@
 .no_permissions {
     background-image: linear-gradient(50deg, rgba(255, 238, 0, 0.1), rgba(255, 238, 0, 0.3));
     border: 1px solid rgba(255, 238, 0);
-    border-radius: 10px;;
-
-    padding: 15px;
 }
 
-.no_permissions div {
-    color:rgba(255, 255, 255, 0.5);
+.no_partnership {
+    background-image: linear-gradient(50deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.25));
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
-.no_permissions h3{
+.feature_block {
+    grid-area: button;
+    width: auto;
+    justify-self: right;
+
+    border-radius: 10px;
+
+    font-size: 1.1rem;
+
+    padding: 20px;
+    
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+.feature_block h3{
     text-shadow: 0 4px 2px black;
     padding-bottom: 10px;
 }
 
-.no_permissions div:first-child {
-    color: white;
-    font-size: 1.1rem;
-    padding-bottom: 2rem;
+.inactive_button_group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+    align-content: center;
 }
+
+.inactive_button {
+    color:rgba(255, 255, 255, 0.5);
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 10px;
+}
+
+.inactive_button:hover { cursor: not-allowed; }
 
 .popup_select {
     border: none;
@@ -126,4 +156,72 @@
 
 .create_button:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Post Container stuff */
+.post_container {
+    flex: 1;
+    width: 100%;
+    border: 1px solid white;
+    border-radius: 15px;
+
+    background-color: rgba(255, 255, 255, 0.02);
+    box-shadow: inset 0 0 10px rgb(255, 255, 255, 0.5);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--post_padding);
+
+    overflow-y: auto;
+    /* scrollbar-color: white transparent; */
+    /* scrollbar-width: thin; */
+}
+
+.post_popup {
+    width: 375px;
+}
+
+.post_popup p {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+}
+
+.created {
+    color: lightgray;
+}
+
+.button {
+    width: auto;
+    font-size: 1.1rem;
+    padding: 10px;
+    border: 1px solid white;
+    border-radius: 10px;
+}
+
+.delete_button {
+    border: 1px solid rgb(217, 114, 115);
+    transition: 0.1s;
+}
+
+.delete_button:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: rgb(217, 114, 115);
+    transition: 0s;
+}
+
+.edit_button {
+    border: 1px solid rgb(108, 180, 252);
+    transition: 0.1s;
+}
+
+.edit_button:hover {
+    background-color: rgba(255, 255, 255, 0.13);
+    color: rgb(108, 180, 252);
+    transition: 0s;
+}
+
+.button_group {
+    display: flex;
+    justify-content: space-between;
 }

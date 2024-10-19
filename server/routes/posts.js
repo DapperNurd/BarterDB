@@ -50,9 +50,51 @@ router.post('/create-post', async (req, res) => {
 
     try {
         const [result] = await db.query(`INSERT INTO post 
-                                        (posting_partnership_id, requesting_item_id, requesting_amount, offering_item_id, offering_amount, is_negotiable) 
+                                        (posting_partnership_id, 
+                                         requesting_item_id, 
+                                         requesting_amount, 
+                                         offering_item_id, 
+                                         offering_amount, 
+                                         is_negotiable) 
                                         VALUES 
                                         (?, ?, ?, ?, ?, ?)`, [postingPartnershipId, requestingItemId, requestingItemAmt, offeringItemId, offeringItemAmt, isNegotiable]);
+
+        if (result) {
+            return res.send({status: true});
+        }
+        else {
+            return res.send({status: false, message: 'Failed to create post.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+
+});
+
+router.post('/update-post', async (req, res) => {
+    const userId = req.body.userId;
+    const postingPartnershipId = req.body.postingPartnershipId;
+    const requestingItemId = req.body.requestingItemId;
+    const requestingItemAmt = req.body.requestingItemAmt;
+    const offeringItemId = req.body.offeringItemId;
+    const offeringItemAmt = req.body.offeringItemAmt;
+    const isNegotiable = req.body.isNegotiable;
+
+    // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
+    // Basically makes it so you can't just get the user's info by knowing their user ID.
+    if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
+
+    try {
+        const [result] = await db.query(`UPDATE post
+                                        SET requesting_item_id = ?, 
+                                            requesting_amount = ?, 
+                                            offering_item_id = ?, 
+                                            offering_amount = ?, 
+                                            is_negotiable = ?
+                                        WHERE posting_partnership_id = ?`, [requestingItemId, requestingItemAmt, offeringItemId, offeringItemAmt, isNegotiable, postingPartnershipId]);
+        
 
         if (result) {
             return res.send({status: true});

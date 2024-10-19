@@ -56,7 +56,7 @@ router.post('/delete-request', async (req, res) => {
 
     // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
     // Basically makes it so you can't just get the user's info by knowing their user ID.
-    if(req.session.userId !== requestingUserId) return res.status(401).send({message: 'User ID does not match session ID.'});
+    if(req.session.userId !== requestingUserId && req.session.userId !== requestedUserId) return res.status(401).send({message: 'User ID does not match session ID.'});
 
     try {
         const [result] = await db.query('DELETE FROM partnership_request WHERE requesting_user_id = ? AND requested_user_id = ?', [requestingUserId, requestedUserId]);

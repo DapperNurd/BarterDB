@@ -8,6 +8,7 @@ import Home from './pages/Home/Home';
 import Signin from './pages/Signin/Signin';
 import Signup from './pages/Signup/Signup';
 import Dashboard from './pages/Dashboard/Dashboard';
+import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
 import AccountSettings from './pages/AccountSettings/AccountSettings';
 import AccountPartnership from './pages/AccountPartnership/AccountPartnership';
 import Error from './pages/Error/Error';
@@ -51,6 +52,7 @@ function App() {
 					<Route path="/login" element={user ? <Navigate to="/dashboard"/> : <Signin  user={user} setUser={setUser}/>} />
 					<Route path="/signup" element={user ? <Navigate to="/dashboard"/> : <Signup user={user} setUser={setUser} />} />
 					<Route path="/dashboard" element={user ? <Dashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
+					<Route path="/dashboard/admin" element={user ? <AdminDashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="/account" element={user ? <AccountSettings user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="/account/partnership" element={user ? <AccountPartnership user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="*" element={<Error />} />
