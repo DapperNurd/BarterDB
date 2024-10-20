@@ -20,10 +20,11 @@ export default function Dashboard(props) {
     const [items, setItems] = useState([]);
     const [hasPartner, setHasPartner] = useState(false);
 
+    const [viewingPost, setViewingPost] = useState({});
+
     const [viewPosts, setViewPosts] = useState([]);
     const [myPosts, setMyPosts] = useState([]);
     const [allPosts, setAllPosts] = useState([]);
-    const [viewingPost, setViewingPost] = useState([]);
 
     const [requestingItemName, setRequestingItemName] = useState("");
     const [requestingItemAmt, setRequestingItemAmt] = useState(1);
@@ -93,7 +94,8 @@ export default function Dashboard(props) {
 
         const createPostResponse = await axios.post("http://localhost:5000/posts/update-post", { 
             userId: user.user_id,
-            postingPartnershipId: partnerResponse.data.partner.partnership_id,
+            // postingPartnershipId: partnerResponse.data.partner.partnership_id,
+            postId: viewingPost.post_id,
             requestingItemId: requestingItem.item_id,
             requestingItemAmt: requestingItemAmt,
             offeringItemId: offeringItem.item_id,
@@ -219,32 +221,32 @@ export default function Dashboard(props) {
             <h2>Edit Post</h2>
             <div className={styles.error_message}>{errorMsg}</div>
             <div className={styles.popup_section}>
-                <label htmlFor="offering_item_list">Item to offer:</label>
-                <select name="offering_item_list" defaultValue={viewingPost.offering} id="offering_item_list" className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); }}>
+                <label htmlFor="offering_item_list_edit">Item to offer:</label>
+                <select name="offering_item_list_edit" defaultValue={viewingPost.offering} id="offering_item_list_edit" className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); }}>
                     {items.map((item, index) => (
                         <option key={index} value={item.name}>
                             {item.name}
                         </option>
                     ))}
                 </select>
-                <input type="number" id="offering_amount" name="quantity" min="1" max="99" defaultValue={viewingPost.offeringAmount} onChange={(e) => { setOfferingItemAmt(e.target.value); }}/>
+                <input type="number" id="offering_amount_edit" name="quantity" min="1" max="99" defaultValue={viewingPost.offeringAmount} onChange={(e) => { setOfferingItemAmt(e.target.value); }}/>
             </div>
             <div className={styles.popup_section}>
-                <label htmlFor="requesting_item_list">Item to request:</label>
-                <select name="requesting_item_list" defaultValue={viewingPost.requesting} id="requesting_item_list" className={styles.popup_select} onChange={(e) => { setRequestingItemName(e.target.value); }}>
+                <label htmlFor="requesting_item_list_edit">Item to request:</label>
+                <select name="requesting_item_list_edit" defaultValue={viewingPost.requesting} id="requesting_item_list_edit" className={styles.popup_select} onChange={(e) => { setRequestingItemName(e.target.value); }}>
                     {items.map((item, index) => (
                         <option key={index} value={item.name}>
                             {item.name}
                         </option>
                     ))}
                 </select>
-                <input type="number" id="requesting_amount" name="quantity" min="1" max="99" defaultValue={viewingPost.requestingAmount} onChange={(e) => { setRequestingItemAmt(e.target.value); }}/>
+                <input type="number" id="requesting_amount_edit" name="quantity" min="1" max="99" defaultValue={viewingPost.requestingAmount} onChange={(e) => { setRequestingItemAmt(e.target.value); }}/>
             </div>
             <div className={styles.popup_section}>
                 <button className={styles.create_button} onClick={UpdatePost}>Save</button>
                 <div className={styles.checkbox}>
-                    <label htmlFor="negotiate">Will Negotiate</label>
-                    <input type="checkbox" defaultChecked={viewingPost.isNegotiable > 0} id="negotiate" name="negotiate" onChange={(e) => { setIsNegotiable(e.target.checked ? 1 : 0); }}/>
+                    <label htmlFor="negotiate_edit">Will Negotiate</label>
+                    <input type="checkbox" defaultChecked={viewingPost.isNegotiable > 0} id="negotiate_edit" name="negotiate_edit" onChange={(e) => { setIsNegotiable(e.target.checked ? 1 : 0); }}/>
                 </div>
             </div>
         </Popup>

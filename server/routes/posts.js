@@ -75,7 +75,7 @@ router.post('/create-post', async (req, res) => {
 
 router.post('/update-post', async (req, res) => {
     const userId = req.body.userId;
-    const postingPartnershipId = req.body.postingPartnershipId;
+    const postId = req.body.postId;
     const requestingItemId = req.body.requestingItemId;
     const requestingItemAmt = req.body.requestingItemAmt;
     const offeringItemId = req.body.offeringItemId;
@@ -93,7 +93,7 @@ router.post('/update-post', async (req, res) => {
                                             offering_item_id = ?, 
                                             offering_amount = ?, 
                                             is_negotiable = ?
-                                        WHERE posting_partnership_id = ?`, [requestingItemId, requestingItemAmt, offeringItemId, offeringItemAmt, isNegotiable, postingPartnershipId]);
+                                        WHERE post_id = ?`, [requestingItemId, requestingItemAmt, offeringItemId, offeringItemAmt, isNegotiable, postId]);
         
 
         if (result) {

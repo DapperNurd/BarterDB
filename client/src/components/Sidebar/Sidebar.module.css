@@ -4,7 +4,7 @@
     justify-content: center;
     align-items: center;
 
-    gap: 15px;
+    gap: 40px;
 
     padding: 0;
 
@@ -45,4 +45,15 @@
     color: white;
     font-size: 1.1rem;
     padding-bottom: 2rem;
+}
+
+.no_permissions_links {
+    display: flex;
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.no_permissions_links a {
+    pointer-events: none;
 }

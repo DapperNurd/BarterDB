@@ -220,4 +220,44 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.post('/get-all-verified-users', async (req, res) => {
+    const userId = req.body.userId;
+
+    // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
+    // Basically makes it so you can't just get the user's info by knowing their user ID.
+    if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
+
+    try {
+        const [result] = await db.query('SELECT user_id, email, access_level, created_at FROM user WHERE access_level <> 0', [userId]);
+
+        if (result.length > 0) {
+            return res.send({users: result});
+        }
+        else {
+            res.send({message: 'No users found.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
+router.post('/get-all-unverified-users', async (req, res) => {
+    const userId = req.body.userId;
+
+    // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
+    // Basically makes it so you can't just get the user's info by knowing their user ID.
+    if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
+
+    try {
+        const [result] = await db.query('SELECT user_id, email, access_level, created_at FROM user WHERE access_level = 0', [userId]);
+        return res.send({users: result});
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
 module.exports = router;

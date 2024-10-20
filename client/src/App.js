@@ -8,12 +8,14 @@ import Home from './pages/Home/Home';
 import Signin from './pages/Signin/Signin';
 import Signup from './pages/Signup/Signup';
 import Dashboard from './pages/Dashboard/Dashboard';
-import AdminDashboard from './pages/AdminDashboard/AdminDashboard';
-import AccountSettings from './pages/AccountSettings/AccountSettings';
-import AccountPartnership from './pages/AccountPartnership/AccountPartnership';
+import AdminUserDashboard from './pages/Admin/AdminUserDashboard/AdminUserDashboard';
+import AccountSettings from './pages/Account/AccountSettings/AccountSettings';
+import AccountPartnership from './pages/Account/AccountPartnership/AccountPartnership';
 import Error from './pages/Error/Error';
+import AdminItemDashboard from './pages/Admin/AdminItemDashboard/AdminItemDashboard';
+import AdminTransactionDashboard from './pages/Admin/AdminTransactionDashboard/AdminTransactionDashboard';
 
-function App() {
+export default function App() {
 
 	axios.defaults.withCredentials = true;
 
@@ -49,10 +51,16 @@ function App() {
 				<Routes>
 					<Route index element={<Home user={user} setUser={setUser}/>} />
 					<Route path="/home" element={<Home user={user} setUser={setUser} />} />
+					
 					<Route path="/login" element={user ? <Navigate to="/dashboard"/> : <Signin  user={user} setUser={setUser}/>} />
 					<Route path="/signup" element={user ? <Navigate to="/dashboard"/> : <Signup user={user} setUser={setUser} />} />
+					
 					<Route path="/dashboard" element={user ? <Dashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
-					<Route path="/dashboard/admin" element={user ? <AdminDashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
+					
+					<Route path="/dashboard/admin" element={user ? <AdminUserDashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
+					<Route path="/dashboard/admin/items" element={user ? <AdminItemDashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
+					<Route path="/dashboard/admin/transactions" element={user ? <AdminTransactionDashboard user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
+					
 					<Route path="/account" element={user ? <AccountSettings user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="/account/partnership" element={user ? <AccountPartnership user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="*" element={<Error />} />
@@ -61,5 +69,3 @@ function App() {
 		</>
 	);
 }
-
-export default App;

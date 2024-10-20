@@ -55,8 +55,8 @@ export default function Header(props) {
             {/* Navigation */}
             <nav className={navStyles.nav}>
                 <ul>
-                {user && showDashLink && <li key="dashboard"><NavLink to="/dashboard">Dashboard</NavLink></li>}
-                {user.access_level > 1 && showAdminLink && <li key="admin_dashboard"><NavLink to="/dashboard/admin">Admin Panel</NavLink></li>}
+                    {user && showDashLink && <li key="dashboard"><NavLink to="/dashboard">Go to Dashboard</NavLink></li>}
+                    {user.access_level > 1 && showAdminLink && <li key="admin_dashboard"><NavLink to="/dashboard/admin">Go to Admin Panel</NavLink></li>}
                 </ul>
             </nav>
 

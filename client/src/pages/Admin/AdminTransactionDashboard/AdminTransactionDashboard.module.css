@@ -1,0 +1,17 @@
+.main{ 
+    display: grid;
+    grid-template-columns: 1fr 6fr;
+
+    column-gap: 25px;
+    row-gap: 40px;
+}
+
+.error_message {
+    color: var(--error-color);
+    margin-bottom: 18px;
+}
+.error_message:empty { display: none; }
+
+.section {
+    margin: 40px;
+}

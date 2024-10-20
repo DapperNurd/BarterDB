@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from 'react';
+import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-import AccountSidebar from "../../components/AccountSidebar/AccountSidebar";
-import Popup from '../../components/Popup/Popup';
+import Header from "../../../components/Header/Header";
+import Footer from "../../../components/Footer/Footer";
+import Sidebar from "../../../components/Sidebar/Sidebar";
+import Popup from '../../../components/Popup/Popup';
 
 import styles from "./AccountSettings.module.css";
 
@@ -139,7 +140,10 @@ export default function Account(props) {
             {showPwChangePopup && changePasswordPopup}
             <Header user={props.user} setUser={props.setUser} />
             <main className={styles.main}>
-                <AccountSidebar user={props.user} setUser={props.setUserr} />
+                <Sidebar user={props.user} setUser={props.setUser} usePermissions={true} >
+                    <NavLink to="/account">Settings</NavLink>
+                    <NavLink to="/account/partnership">Partnership</NavLink>
+                </Sidebar>
                 <section className={styles.section}>
                     <h1>Account Settings</h1>
                     <p><strong>E-mail:</strong> {user.email}</p>

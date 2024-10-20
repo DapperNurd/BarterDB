@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
-import Header from "../../components/Header/Header";
-import Footer from "../../components/Footer/Footer";
-import AccountSidebar from "../../components/AccountSidebar/AccountSidebar";
-import Popup from '../../components/Popup/Popup';
+import Header from "../../../components/Header/Header";
+import Footer from "../../../components/Footer/Footer";
+import Sidebar from "../../../components/Sidebar/Sidebar";
+import Popup from '../../../components/Popup/Popup';
 
 import styles from "./AccountPartnership.module.css";
 
@@ -272,7 +272,10 @@ export default function Account(props) {
             {showAcceptRequestPopup && acceptRequestPopup /* Popup that shows when you accept a request */ }
             <Header user={props.user} setUser={props.setUser} />
             <main className={styles.main}>
-                <AccountSidebar user={props.user} setUser={props.setUserr} />
+                <Sidebar user={props.user} setUser={props.setUser} usePermissions={true} >
+                    <NavLink to="/account">Settings</NavLink>
+                    <NavLink to="/account/partnership">Partnership</NavLink>
+                </Sidebar>
                 <section className={styles.section}>
                     <h1>Partner</h1>
                     <div className={styles.partner_section}>
