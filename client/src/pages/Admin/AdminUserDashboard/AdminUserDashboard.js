@@ -5,8 +5,6 @@ import axios from 'axios';
 import Header from "../../../components/Header/Header";
 import Footer from "../../../components/Footer/Footer";
 import Sidebar from "../../../components/Sidebar/Sidebar";
-import Popup from "../../../components/Popup/Popup";
-import Post from '../../../components/Post/Post';
 
 import styles from "./AdminUserDashboard.module.css";
 import Table from '../../../components/Table/Table';
@@ -19,40 +17,30 @@ export default function AdminUserDashboard(props) {
     
     const [verifiedUsers, setVerifiedUsers] = useState([]);
     const [unverifiedUsers, setUnverifiedUsers] = useState([]);
-    const [errorMsg, setErrorMsg] = useState('');
 
     const columnDef = [
         {
             accessorKey: 'user_id',
             header: 'ID',
+            size: 80,
         },
         {
             accessorKey: 'email',
             header: 'E-mail',
             cell: EditableCell,
+            size: 1200,
         },
         {
             accessorKey: 'access_level',
             header: 'Access Level',
             cell: EditableCell,
+            size: 250,
         },
         {
             accessorKey: 'created_at',
             header: 'Created',
             cell: (props) => new Date(props.getValue()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
         },
-        {
-            accessorKey: 'test',
-            header: 'Actions',
-            cell: (props) => {
-                return (
-                    <div style={{display: 'flex'}}>
-                        <button onClick={() => {}}>Verify</button>
-                        <button onClick={() => {}}>Delete</button>
-                    </div>
-                );
-            },
-        }
     ];
 
     const GetUsers = async () => {
@@ -62,7 +50,7 @@ export default function AdminUserDashboard(props) {
         }
 
         const unverifiedUsersResponse = await axios.post("http://localhost:5000/users/get-all-unverified-users", { userId: user.user_id });
-        if(!unverifiedUsersResponse.data.message) {
+        if(unverifiedUsersResponse.data.users) {
             setUnverifiedUsers(unverifiedUsersResponse.data.users);
         }
     }
@@ -72,7 +60,7 @@ export default function AdminUserDashboard(props) {
             navigate("/dashboard");
         }
         GetUsers();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <>
@@ -87,7 +75,7 @@ export default function AdminUserDashboard(props) {
                     <div className={styles.dash_header}>
                         {unverifiedUsers.length > 0 && 
                             <>
-                                <Table title="New Users" data={unverifiedUsers} columns={columnDef} />
+                                <Table showButtons={false} title="New Users" data={unverifiedUsers} columns={columnDef} />
                             </>
                         }
                         <Table title="Verified Users" data={verifiedUsers} columns={columnDef} />
