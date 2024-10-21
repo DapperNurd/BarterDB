@@ -3,6 +3,7 @@ import styles from './EditableCell.module.css';
 
 export default function EditableCell({ getValue }) {
         const initialValue = getValue();
+        
         const [value, setValue] = useState(initialValue);
 
     return (

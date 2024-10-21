@@ -25,30 +25,25 @@ export default function AdminUserDashboard(props) {
         {
             accessorKey: 'user_id',
             header: 'ID',
-            size: 30
         },
         {
             accessorKey: 'email',
             header: 'E-mail',
-            size: 800,
             cell: EditableCell,
         },
         {
             accessorKey: 'access_level',
             header: 'Access Level',
-            size: 200,
             cell: EditableCell,
         },
         {
             accessorKey: 'created_at',
             header: 'Created',
-            size: 400,
-            cell: (props) => new Date(props.getValue()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+            cell: (props) => new Date(props.getValue()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
         },
         {
             accessorKey: 'test',
             header: 'Actions',
-            size: 200,
             cell: (props) => {
                 return (
                     <div style={{display: 'flex'}}>
@@ -56,7 +51,7 @@ export default function AdminUserDashboard(props) {
                         <button onClick={() => {}}>Delete</button>
                     </div>
                 );
-            }
+            },
         }
     ];
 

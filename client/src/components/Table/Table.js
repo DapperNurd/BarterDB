@@ -15,7 +15,6 @@ export default function Table(props) {
         data: props.data,
         columns: props.columns,
         getCoreRowModel: getCoreRowModel(),
-        columnResizeMode: "onChange",
         getPaginationRowModel: getPaginationRowModel(), //load client-side pagination code
         getSortedRowModel: getSortedRowModel(),
         state: {
@@ -33,23 +32,14 @@ export default function Table(props) {
                 <h1>{title}</h1>
                 <input type="text" placeholder='Search...' value={filtering ?? ""} onChange={(e) => { setFiltering(e.target.value); }} />
             </div>
-            <table className={styles.table} style={{width: table.getCenterTotalSize()}}>
+            <table className={styles.table}>
                 <thead>
                     {table.getHeaderGroups().map(headerGroup => { return (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map(header => ( // map over the headerGroup headers array
-                                <th style={{width: header.getSize()}} key={header.id} colSpan={header.colSpan} onClick={header.column.getToggleSortingHandler()}>
+                                <th key={header.id} colSpan={header.colSpan} onClick={header.column.getToggleSortingHandler()}>
                                     {header.column.columnDef.header}
-                                    {header.column.getCanResize() && 
-                                        <>
-                                            <div
-                                                onMouseDown={header.getResizeHandler()} 
-                                                onTouchStart={header.getResizeHandler()} 
-                                                className={`${styles.table_resizer} ${header.column.getIsResizing() ? 'isResizing' : ''}`}
-                                            />
-                                            {{asc: '🔼', desc: '🔽'}[header.column.getIsSorted() ?? null]}
-                                        </>
-                                    }
+                                    {{asc: '🔼', desc: '🔽'}[header.column.getIsSorted() ?? null]}
                                 </th>
                             ))}
                         </tr>
@@ -59,7 +49,7 @@ export default function Table(props) {
                     {table.getRowModel().rows.map(row => (
                         <tr>
                             {row.getVisibleCells().map(cell => { return (
-                                <td style={{width: cell.column.getSize()}} key={cell.id}>
+                                <td key={cell.id}>
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </td>
                             )})}
@@ -73,9 +63,6 @@ export default function Table(props) {
                 {`${table.getState().pagination.pageIndex + 1} / ${table.getPageCount()}`}
                 <button disabled={!table.getCanNextPage()} onClick={() => { table.nextPage(); }}>{">"}</button>
                 <button onClick={() => { table.setPageIndex(table.getPageCount() - 1) }}>{">>"}</button>
-                {/* <Link to={table.getPreviousPageLink()}>&lt;</Link>
-                <span>{table.getCurrentPage()}</span>
-                <Link to={table.getNextPageLink()}>&gt;</Link> */}
             </div>}
         </div>
     );
