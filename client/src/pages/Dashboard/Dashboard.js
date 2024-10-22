@@ -278,6 +278,7 @@ export default function Dashboard(props) {
 
     const viewPostsContainer = (
         <div className={styles.post_container}>
+            {viewPosts.length <= 0 ? <div className={styles.no_posts}>No posts to show</div> : null}
             {viewPosts.map(function(post, i) {
                 return <Post key={i} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowViewPostPopup} />;
             })}
@@ -286,6 +287,7 @@ export default function Dashboard(props) {
 
     const myPostsContainer = (
         <div className={styles.post_container}>
+            {myPosts.length <= 0 ? <div className={styles.no_posts}>No posts to show</div> : null}
             {myPosts.map(function(post, i) {
                 return <Post key={i} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowViewPostPopup} />;
             })}
@@ -294,6 +296,7 @@ export default function Dashboard(props) {
 
     const allPostsContainer = (
         <div className={styles.post_container}>
+            {allPosts.length <= 0 ? <div className={styles.no_posts}>No posts to show</div> : null}
             {allPosts.map(function(post, i) {
                 return <Post key={i} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowViewPostPopup} />;
             })}
@@ -307,24 +310,23 @@ export default function Dashboard(props) {
             {showCreatePostPopup && createPostPopup}
             {showEditPostPopup && editPostPopup}
             <main className={styles.main}>
-                {headerButton()}
-                <div className={styles.dash_header}>
+                <div className={styles.heading}>
                     <h1>Welcome to your dashboard, {props.user.email}!</h1>
+                    {headerButton()}
                 </div>
-                <div className={`${styles.dashboard} ${styles.view_posts}`}>
-                    <h1>Your Offers</h1>
-                    {viewPostsContainer}
-                    {/* <PostContainer ref={offersDashboard} refresh={RefreshAllDashboards} user={props.user} setUser={props.setUser} /> */}
-                </div>
-                <div className={`${styles.dashboard} ${styles.my_posts}`}>
-                    <h1>My Posts</h1>
-                    {myPostsContainer}
-                    {/* <PostContainer ref={postsDashboard} refresh={RefreshAllDashboards} user={props.user} setUser={props.setUser} /> */}
-                </div>
-                <div className={`${styles.dashboard} ${styles.all_posts}`}>
-                    <h1>Post History</h1>
-                    {allPostsContainer}
-                    {/* <PostContainer ref={historyDashboard} refresh={RefreshAllDashboards} user={props.user} setUser={props.setUser} /> */}
+                <div className={styles.dashboards}>
+                    <div className={`${styles.dashboard} ${styles.view_posts}`}>
+                        <h1>Your Offers</h1>
+                        {viewPostsContainer}
+                    </div>
+                    <div className={`${styles.dashboard} ${styles.my_posts}`}>
+                        <h1>My Posts</h1>
+                        {myPostsContainer}
+                    </div>
+                    <div className={`${styles.dashboard} ${styles.all_posts}`}>
+                        <h1>Transaction History</h1>
+                        {allPostsContainer}
+                    </div>
                 </div>
             </main>
             <Footer />

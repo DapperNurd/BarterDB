@@ -1,17 +1,13 @@
 .aside {
     display: flex;
     flex-direction: column;
-    /* justify-content: center; */
-    position: sticky;
-    top: 20px;
     align-items: center;
 
     gap: 40px;
 
-    padding-top: 20px;    
+    padding-top: 40px;    
 
     font-size: 1.8rem;
-    position: relative;
 
     /* border-right: 1px solid rgba(255, 255, 255, 0.253); */
 }

@@ -260,4 +260,29 @@ router.post('/get-all-unverified-users', async (req, res) => {
     }
 });
 
+router.post('/set-access-level', async (req, res) => {
+    const userId = req.body.userId;
+    const targetUserId = req.body.targetUserId;
+    const level = req.body.level;
+
+    // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
+    // Basically makes it so you can't just get the user's info by knowing their user ID.
+    if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
+
+    try {
+        const [result] = await db.query('UPDATE user SET access_level = ? WHERE user_id = ?;', [level, targetUserId]);
+
+        if (result) {
+            return res.send({status: true, user: result[0]});
+        }
+        else {
+            res.send({status: false, message: 'Error changing access level of user.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
 module.exports = router;

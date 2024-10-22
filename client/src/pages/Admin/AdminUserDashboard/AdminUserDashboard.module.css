@@ -15,3 +15,16 @@
 .section {
     margin: 40px;
 }
+
+.popup_button {
+    width: auto;
+    padding: 10px;
+    font-size: 1.1rem;
+    border: 1px solid white;
+    border-radius: 10px;
+    margin-top: 12px;
+}
+
+.popup_button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}

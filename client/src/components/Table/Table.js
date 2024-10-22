@@ -10,26 +10,9 @@ export default function Table(props) {
 
     const title = props.title ?? "";
 
-    // What we are doing here is basically saying that if the showButtons prop is not passed, then we want to default to true and add the button column.
-    const showButtons = props.showButtons ?? true;
-    const columns = showButtons ? [...props.columns, 
-        {
-            accessorKey: 'test',
-            header: 'Actions',
-            cell: (props) => {
-                return (
-                    <div className={styles.table_buttons}>
-                        <button onClick={() => {}}>Verify</button>
-                        <button onClick={() => {}}>Delete</button>
-                    </div>
-                );
-            },
-        }]
-        : props.columns;
-
     const table = useReactTable({
         data: props.data,
-        columns: columns,
+        columns: props.columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(), //load client-side pagination code
         getSortedRowModel: getSortedRowModel(),
@@ -53,7 +36,11 @@ export default function Table(props) {
                     {table.getHeaderGroups().map((headerGroup, i) => { return (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header, i) => ( // map over the headerGroup headers array
-                                <th style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }} key={header.id} colSpan={header.colSpan} onClick={header.column.getToggleSortingHandler()}>
+                                <th key={header.id}
+                                    style={{ width: header.getSize() !== 150 ? header.getSize() : undefined }} 
+                                    colSpan={header.colSpan} 
+                                    onClick={header.column.getToggleSortingHandler()}
+                                >
                                     {header.column.columnDef.header}
                                     {{asc: '🔼', desc: '🔽'}[header.column.getIsSorted() ?? null]}
                                 </th>
@@ -65,7 +52,9 @@ export default function Table(props) {
                     {table.getRowModel().rows.map(row => (
                         <tr>
                             {row.getVisibleCells().map((cell, i) => { return (
-                                <td key={cell.id} style={{textAlign: i === 0 ? 'center' : 'left', width: cell.column.getSize() !== 150 ? cell.column.getSize() : undefined }} >
+                                <td key={cell.id} 
+                                    style={{width: cell.column.getSize() !== 150 ? cell.column.getSize() : undefined}}
+                                >
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </td>
                             )})}

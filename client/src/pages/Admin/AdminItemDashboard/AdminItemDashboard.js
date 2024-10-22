@@ -9,6 +9,7 @@ import Sidebar from "../../../components/Sidebar/Sidebar";
 import styles from "./AdminItemDashboard.module.css";
 import Table from '../../../components/Table/Table';
 import EditableCell from '../../../components/EditableCell/EditableCell';
+import Popup from '../../../components/Popup/Popup';
 
 export default function AdminItemDashboard(props) {
 
@@ -16,6 +17,12 @@ export default function AdminItemDashboard(props) {
     let navigate = useNavigate();
     
     const [items, setItems] = useState([]);
+
+    const [workingRow, setWorkingRow] = useState({});
+
+    const [showDeleteUserPopup, setShowDeleteUserPopup] = useState(false);
+
+    const [errorMsg, setErrorMsg] = useState('');
 
     const getItems = async () => {
         const response = await axios.get("http://localhost:5000/posts/get-items");
@@ -53,7 +60,33 @@ export default function AdminItemDashboard(props) {
             header: 'Created',
             cell: (props) => new Date(props.getValue()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })
         },
+        {
+            accessorKey: 'buttons',
+            header: 'Utility',
+            cell: (data) => {
+                const row = data.row.original;
+                return (
+                    <nav>
+                        <button onClick={() => {setWorkingRow(row); setShowDeleteUserPopup(true);}}>Delete</button>
+                    </nav>
+                );
+            },
+            size: 175
+        }
     ];
+
+    const deletePopup = (
+        <Popup trigger={setShowDeleteUserPopup}>
+            <div className={styles.popup}>
+                <h2>Delete Item</h2>
+                <div className={styles.error_message}>{errorMsg}</div>
+                <p>Are you sure you want to delete item <strong>{workingRow.name}</strong>? This cannot be undone.</p>
+                <div className={styles.popup_button_group}>
+                    <button className={`${styles.popup_button} ${styles.negative_button}`} onClick={() => {console.log("delete user " + workingRow.name)}}>Delete</button>
+                </div>
+            </div>
+        </Popup>
+    );
 
     useEffect(() => {
         if(user.access_level <= 1) {
@@ -64,6 +97,7 @@ export default function AdminItemDashboard(props) {
     return (
         <>
             <Header showAdminLink={false} user={props.user} setUser={props.setUser} />
+            {showDeleteUserPopup && deletePopup}
             <main className={styles.main}>
                 <Sidebar user={props.user} setUser={props.setUser}>
                     <NavLink to="/dashboard/admin">Users</NavLink>
@@ -71,6 +105,7 @@ export default function AdminItemDashboard(props) {
                     <NavLink to="/dashboard/admin/transactions">Transactions</NavLink>
                 </Sidebar>
                 <section className={styles.section}>
+                    <button className={styles.new_item_button}>+ Add New Item</button>
                     <div className={styles.dash_header}>
                         <Table title="Item Management"  data={items} columns={columnDef} />
                     </div>
