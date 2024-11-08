@@ -143,6 +143,30 @@ router.post('/get-user', async (req, res) => {
     }
 });
 
+router.post('/delete-user', async (req, res) => {
+    const userId = req.body.userId;
+    const targetUserId = req.body.targetUserId;
+
+    // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
+    // Basically makes it so you can't just get the user's info by knowing their user ID.
+    if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
+
+    try {
+        const [result] = await db.query('DELETE FROM user WHERE user_id = ?;', [targetUserId]);
+
+        if (result) {
+            return res.send({status: true});
+        }
+        else {
+            return res.send({status: false, message: 'Failed to delete user.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
 router.post('/register', async (req, res) => {
     const email = req.body.email;
     const password = req.body.password;

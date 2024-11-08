@@ -80,6 +80,15 @@ export default function Signup(props) {
 						}} 
 					/>
 
+					<label>Confirm Password</label>
+					<input 
+						type="password"
+						placeholder='Password'
+						onChange = {(e) => {
+							
+						}} 
+					/>
+
 					<button onClick={register}>Register</button>
 
 					<div className={styles.link}><Link to="/login">Already have an account? Login</Link></div>

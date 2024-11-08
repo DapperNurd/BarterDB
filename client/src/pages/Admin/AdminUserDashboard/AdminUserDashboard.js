@@ -8,7 +8,6 @@ import Sidebar from "../../../components/Sidebar/Sidebar";
 
 import styles from "./AdminUserDashboard.module.css";
 import Table from '../../../components/Table/Table';
-import EditableCell from '../../../components/EditableCell/EditableCell';
 import Popup from '../../../components/Popup/Popup';
 
 export default function AdminUserDashboard(props) {
@@ -23,6 +22,7 @@ export default function AdminUserDashboard(props) {
 
     const [showVerifyUserPopup, setShowVerifyUserPopup] = useState(false);
     const [showSuspendUserPopup, setShowSuspendUserPopup] = useState(false);
+    const [showUnsuspendUserPopup, setShowUnsuspendUserPopup] = useState(false);
     const [showDeleteUserPopup, setShowDeleteUserPopup] = useState(false);
 
     const [errorMsg, setErrorMsg] = useState('');
@@ -36,7 +36,7 @@ export default function AdminUserDashboard(props) {
         {
             accessorKey: 'email',
             header: 'E-mail',
-            size: 1000,
+            size: 800,
         },
         {
             accessorKey: 'access_level',
@@ -53,12 +53,12 @@ export default function AdminUserDashboard(props) {
                         return "Suspended";
                 }
             },
-            size: 175,
+            size: 150,
         },
         {
             accessorKey: 'created_at',
             header: 'Created',
-            size: 600,
+            size: 500,
             cell: (props) => new Date(props.getValue()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
         }
     ];
@@ -86,7 +86,7 @@ export default function AdminUserDashboard(props) {
             return (
                 <nav>
                     {row.access_level < 0
-                        ? <button onClick={() => {setWorkingRow(row); setShowSuspendUserPopup(true);}}>Unsuspend</button> 
+                        ? <button onClick={() => {setWorkingRow(row); setShowUnsuspendUserPopup(true);}}>Unsuspend</button> 
                         : <button onClick={() => {setWorkingRow(row); setShowSuspendUserPopup(true);}}>Suspend</button>
                     }
                     <button onClick={() => {setWorkingRow(row); setShowDeleteUserPopup(true);}}>Delete</button>
@@ -109,6 +109,11 @@ export default function AdminUserDashboard(props) {
     }
 
     const SetAccessLevel = async (targetId, newLevel) => {
+        if(targetId === user.user_id) {
+            setErrorMsg("You cannot change your own access level.");
+            return;
+        }
+
         const response = await axios.post("http://localhost:5000/users/set-access-level", { userId: user.user_id, targetUserId: targetId, level: newLevel });
         if(!response.data.status) {
             setErrorMsg("Error changing access level of user.");
@@ -116,8 +121,32 @@ export default function AdminUserDashboard(props) {
         }
         
         setWorkingRow({});
-        setShowVerifyUserPopup(false);
+        CloseAllPopups();
         GetUsers();
+    }
+
+    const DeleteUser = async (targetId) => {
+        if(targetId === user.user_id) {
+            setErrorMsg("You cannot delete your own account.");
+            return;
+        }
+
+        const response = await axios.post("http://localhost:5000/users/delete-user", { userId: user.user_id, targetUserId: targetId });
+        if(!response.data.status) {
+            setErrorMsg("Error deleting user.");
+            return;
+        }
+
+        setWorkingRow({});
+        CloseAllPopups();
+        GetUsers();
+    }
+
+    const CloseAllPopups = () => {
+        setShowVerifyUserPopup(false);
+        setShowSuspendUserPopup(false);
+        setShowUnsuspendUserPopup(false);
+        setShowDeleteUserPopup(false);
     }
 
     useEffect(() => {
@@ -126,6 +155,10 @@ export default function AdminUserDashboard(props) {
         }
         GetUsers();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        setErrorMsg('');    
+    }, [showVerifyUserPopup, showSuspendUserPopup, showUnsuspendUserPopup, showDeleteUserPopup]);
 
     const verifyPopup = (
         <Popup trigger={setShowVerifyUserPopup}>
@@ -153,6 +186,19 @@ export default function AdminUserDashboard(props) {
         </Popup>
     );
 
+    const unsuspendPopup = (
+        <Popup trigger={setShowUnsuspendUserPopup}>
+            <div className={styles.popup}>
+                <h2>Unsuspend User</h2>
+                <div className={styles.error_message}>{errorMsg}</div>
+                <p>Are you sure you want to unsuspend <strong>{workingRow.email}</strong>?</p>
+                <div className={styles.popup_button_group}>
+                    <button className={`${styles.popup_button} ${styles.positive_button}`} onClick={() => {SetAccessLevel(workingRow.user_id, 1)}}>Verify</button>
+                </div>
+            </div>
+        </Popup>
+    );
+
     const deletePopup = (
         <Popup trigger={setShowDeleteUserPopup}>
             <div className={styles.popup}>
@@ -160,7 +206,7 @@ export default function AdminUserDashboard(props) {
                 <div className={styles.error_message}>{errorMsg}</div>
                 <p>Are you sure you want to delete user <strong>{workingRow.email}</strong>? This cannot be undone.</p>
                 <div className={styles.popup_button_group}>
-                    <button className={`${styles.popup_button} ${styles.positive_button}`} onClick={() => {console.log(`delete user ${workingRow.email}`)}}>Verify</button>
+                    <button className={`${styles.popup_button} ${styles.negative_button}`} onClick={() => {DeleteUser(workingRow.user_id)}}>Delete</button>
                 </div>
             </div>
         </Popup>
@@ -171,6 +217,7 @@ export default function AdminUserDashboard(props) {
             <Header showAdminLink={false} user={props.user} setUser={props.setUser} />
             {showVerifyUserPopup && verifyPopup}
             {showSuspendUserPopup && suspendPopup}
+            {showUnsuspendUserPopup && unsuspendPopup}
             {showDeleteUserPopup && deletePopup}
             <main className={styles.main}>
                 <Sidebar user={props.user} setUser={props.setUser}>
