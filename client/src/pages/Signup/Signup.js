@@ -12,6 +12,7 @@ export default function Signup(props) {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
     
     const [signinStatus, setSigninStatus] = useState(" "); // This is an white-space char, so the auto height still considers it.
 
@@ -19,8 +20,13 @@ export default function Signup(props) {
 	axios.defaults.withCredentials = true;
 
     const register = () => {
-		if(email === "" || password === "") {
+		if(email === "" || password === "" || confirmPassword === "") {
 			setSigninStatus("Please fill in all required (*) fields."); // this is a temp notification thing
+			return;
+		}
+		if(password !== confirmPassword)
+		{
+			setSigninStatus("Passwords don't match");
 			return;
 		}
 
@@ -85,7 +91,7 @@ export default function Signup(props) {
 						type="password"
 						placeholder='Password'
 						onChange = {(e) => {
-							
+							setConfirmPassword(e.target.value);
 						}} 
 					/>
 

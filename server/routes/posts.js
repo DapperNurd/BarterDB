@@ -11,16 +11,14 @@ router.post('/get-posts', async (req, res) => {
 
     try { // This gets all posts associated with the userId, and also gets the item names associating with the post item id's (just so we don't have to query again later)
         const [result] = await db.query(`SELECT p.*, 
-                                            i1.name AS requesting_item_name, 
-                                            i2.name AS offering_item_name
+                                        i1.name AS requesting_item_name, 
+                                        i2.name AS offering_item_name
                                         FROM post p
                                         JOIN item i1 ON p.requesting_item_id = i1.item_id
                                         JOIN item i2 ON p.offering_item_id = i2.item_id
-                                        WHERE p.posting_partnership_id IN 
-                                            (SELECT partnership_id 
-                                            FROM partnership 
-                                            WHERE user1_id = ? OR user2_id = ?);
-                                        `, [userId, userId]);
+                                        WHERE posting_user_id = ?
+                                        AND is_matched = ?
+                                        `, [userId, false]);
 
         if (result.length > 0) {
             return res.send({posts: result});
@@ -37,7 +35,6 @@ router.post('/get-posts', async (req, res) => {
 
 router.post('/create-post', async (req, res) => {
     const userId = req.body.userId;
-    const postingPartnershipId = req.body.postingPartnershipId;
     const requestingItemId = req.body.requestingItemId;
     const requestingItemAmt = req.body.requestingItemAmt;
     const offeringItemId = req.body.offeringItemId;
@@ -50,14 +47,14 @@ router.post('/create-post', async (req, res) => {
 
     try {
         const [result] = await db.query(`INSERT INTO post 
-                                        (posting_partnership_id, 
+                                        (posting_user_id,
                                          requesting_item_id, 
                                          requesting_amount, 
                                          offering_item_id, 
                                          offering_amount, 
                                          is_negotiable) 
                                         VALUES 
-                                        (?, ?, ?, ?, ?, ?)`, [postingPartnershipId, requestingItemId, requestingItemAmt, offeringItemId, offeringItemAmt, isNegotiable]);
+                                        (?, ?, ?, ?, ?, ?)`, [userId, requestingItemId, requestingItemAmt, offeringItemId, offeringItemAmt, isNegotiable]);
 
         if (result) {
             return res.send({status: true});

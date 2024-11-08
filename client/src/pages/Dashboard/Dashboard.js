@@ -55,7 +55,6 @@ export default function Dashboard(props) {
 
         const createPostResponse = await axios.post("http://localhost:5000/posts/create-post", { 
             userId: user.user_id,
-            postingPartnershipId: partnerResponse.data.partner.partnership_id,
             requestingItemId: requestingItem.item_id,
             requestingItemAmt: requestingItemAmt,
             offeringItemId: offeringItem.item_id,
@@ -83,14 +82,6 @@ export default function Dashboard(props) {
 
         const requestingItem = items.find(item => item.name.toLowerCase() === requestingItemName.toLowerCase());
         const offeringItem = items.find(item => item.name.toLowerCase() === offeringItemName.toLowerCase());
-
-        console.log("TEST", requestingItem);
-
-        const partnerResponse = await axios.post("http://localhost:5000/partnerships/get-partnership", { userId: user.user_id });
-        if(partnerResponse.data.message) {
-            setErrorMsg('Error: Unable to find partner.');
-            return false;
-        }
 
         const createPostResponse = await axios.post("http://localhost:5000/posts/update-post", { 
             userId: user.user_id,
@@ -209,7 +200,7 @@ export default function Dashboard(props) {
                 <p className={styles.created}>Created at: <time>{new Date(viewingPost.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>
                 {viewingPost.createdAt != viewingPost.updatedAt && <p className={styles.created}>Updated at: <time>{new Date(viewingPost.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>}
                 <div className={styles.button_group}>
-                    <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { SetPostObject(viewingPost); setShowViewPostPopup(false); setShowEditPostPopup(true); }}>Edit Post</button>
+                    <button className={`${styles.button} ${styles.edit_button}`} onClick={() => {SetPostObject(viewingPost); setShowViewPostPopup(false); setShowEditPostPopup(true); }}>Edit Post</button>
                     <button className={`${styles.button} ${styles.delete_button}`} onClick={() => { DeletePost(viewingPost.post_id) }}>Delete Post</button>
                 </div>
             </div>

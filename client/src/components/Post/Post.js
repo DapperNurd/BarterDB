@@ -15,6 +15,7 @@ export default function Post(props) {
                 createdAt: props.data.created_at,
                 updatedAt: props.data.updated_at
             })
+
             props.setShowPopup(true);
         }
     }
