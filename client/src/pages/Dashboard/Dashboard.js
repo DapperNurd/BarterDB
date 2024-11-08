@@ -15,6 +15,7 @@ export default function Dashboard(props) {
 
     const [showCreatePostPopup, setShowCreatePostPopup] = useState(false);
     const [showViewPostPopup, setShowViewPostPopup] = useState(false);
+    const [showMatchPostPopup, setShowMatchPostPopup] = useState(false);
     const [showEditPostPopup, setShowEditPostPopup] = useState(false);
 
     const [items, setItems] = useState([]);
@@ -208,6 +209,21 @@ export default function Dashboard(props) {
         </Popup>
     );
 
+    const matchPostPopup = (
+        <Popup trigger={setShowMatchPostPopup}>
+            <div className={styles.post_popup}>
+                <h2>Post Details</h2>
+                <div className={styles.error_message}>{errorMsg}</div>
+                <p>Offering Item: <span>{viewingPost.offering}</span> {viewingPost.offeringAmount > 1 ? "x" + viewingPost.offeringAmount : ""}</p>
+                <p>Requesting Item: <span>{viewingPost.requesting}</span> {viewingPost.requestingAmount > 1 ? "x" + viewingPost.requestingAmount : ""}</p>
+                {viewingPost.isNegotiable > 0 && <p>Willing to negotiate.</p>}
+                <div className={styles.button_group}>
+                    <button className={`${styles.button} ${styles.edit_button}`} onClick={() => {}}>Match Post</button>
+                </div>
+            </div>
+        </Popup>
+    );
+
     const editPostPopup = (
         <Popup trigger={setShowEditPostPopup}>
             <h2>Edit Post</h2>
@@ -272,7 +288,7 @@ export default function Dashboard(props) {
         <div className={styles.post_container}>
             {viewPosts.length <= 0 ? <div className={styles.no_posts}>No posts to show</div> : null}
             {viewPosts.map(function(post, i) {
-                return <Post key={i} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowViewPostPopup} />;
+                return <Post key={i} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowMatchPostPopup} />;
             })}
         </div>
     );
@@ -299,6 +315,7 @@ export default function Dashboard(props) {
         <>
             <Header user={props.user} setUser={props.setUser} showDashLink={false} />
             {showViewPostPopup && viewPostPopup}
+            {showMatchPostPopup && matchPostPopup}
             {showCreatePostPopup && createPostPopup}
             {showEditPostPopup && editPostPopup}
             <main className={styles.main}>
