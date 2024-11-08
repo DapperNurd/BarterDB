@@ -3,6 +3,8 @@ import styles from './Post.module.css';
 
 export default function Post(props) {
 
+    const isUsers = props.isUsers ?? false;
+
     const OpenPost = () => {
         if(props.setShowPopup) {
             props.setData({
@@ -61,7 +63,7 @@ export default function Post(props) {
                 <div className={`${styles.post_item} ${styles.requesting_item}`}>{props.data.requesting_item_name}</div>
                 <div className={styles.post_amt}>x{props.data.requesting_amount}</div>
             </div>
-            {props.data.is_negotiable > 0 && <div className={styles.post_line}><em>Willing to negotiate.</em></div>}
+            {props.data.is_negotiable > 0 && <div className={styles.post_line}><em>{isUsers ? "Willing to negotiate." : "Negotiating."}</em></div>}
             {date()}
         </button>
     );

@@ -281,7 +281,7 @@ export default function Dashboard(props) {
         <div className={styles.post_container}>
             {myPosts.length <= 0 ? <div className={styles.no_posts}>No posts to show</div> : null}
             {myPosts.map(function(post, i) {
-                return <Post key={i} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowViewPostPopup} />;
+                return <Post key={i} isUsers={true} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowViewPostPopup} />;
             })}
         </div>
     );
