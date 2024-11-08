@@ -124,7 +124,8 @@ export default function Dashboard(props) {
     // Function to refresh the posts
     const populatePosts = async () => {
         // View posts
-
+        const viewPostsResponse = await axios.post("http://localhost:5000/posts/get-match-posts", { userId: props.user.user_id });
+        setViewPosts(viewPostsResponse.data.message ? [] : viewPostsResponse.data.posts);
         // My posts
         const response = await axios.post("http://localhost:5000/posts/get-posts", { userId: props.user.user_id });
         setMyPosts(response.data.message ? [] : response.data.posts);
