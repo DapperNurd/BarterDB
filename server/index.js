@@ -39,11 +39,13 @@ const userRouter = require('./routes/users.js');
 const postRouter = require('./routes/posts.js');
 const partnershipRouter = require('./routes/partnerships.js');
 const requestRouter = require('./routes/requests.js');
+const transactionRouter = require('./routes/transactions.js');
 
 app.use("/users", userRouter);
 app.use("/posts", postRouter);
 app.use("/partnerships", partnershipRouter);
 app.use("/requests", requestRouter);
+app.use("/transactions", transactionRouter);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

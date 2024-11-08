@@ -15,7 +15,8 @@ export default function Post(props) {
                 requestingAmount: props.data.requesting_amount,
                 isNegotiable: props.data.is_negotiable,
                 createdAt: props.data.created_at,
-                updatedAt: props.data.updated_at
+                updatedAt: props.data.updated_at,
+                matchPost: props.data.matching_post_id
             })
 
             props.setShowPopup(true);

@@ -38,38 +38,40 @@ router.post('/get-match-posts', async (req, res) => {
 
     try { // This gets all posts associated with the userId, and also gets the item names associating with the post item id's (just so we don't have to query again later)
         const [result] = await db.query(`SELECT 
-                                        p2.*,
-                                        item_offered_by_other.name AS offering_item_name,
-                                        item_requested_by_other.name AS requesting_item_name
-                                    FROM 
-                                        post p1
-                                    JOIN 
-                                        post p2 
-                                        ON p1.offering_item_id = p2.requesting_item_id
-                                        AND p1.requesting_item_id = p2.offering_item_id
-                                    JOIN 
-                                        item item_offered_by_other 
-                                        ON p2.offering_item_id = item_offered_by_other.item_id
-                                    JOIN 
-                                        item item_requested_by_other 
-                                        ON p2.requesting_item_id = item_requested_by_other.item_id
-                                    WHERE 
-                                        p1.posting_user_id = ?
-                                        AND p2.posting_user_id != ?
-                                        AND p1.is_matched = FALSE
-                                        AND p2.is_matched = FALSE
-                                        AND (
-                                        -- Condition for negotiable posts
-                                        (p1.is_negotiable = TRUE AND p2.is_negotiable = TRUE)
-                                        OR 
-                                        -- Condition for exact matching amounts
-                                        (
-                                        p1.requesting_amount = p2.offering_amount
-                                        AND p2.requesting_amount = p1.offering_amount)
-                                        );
+                                            p2.*,
+                                            p1.post_id AS matching_post_id,
+                                            item_offered_by_other.name AS offering_item_name,
+                                            item_requested_by_other.name AS requesting_item_name
+                                        FROM 
+                                            post p1
+                                        JOIN 
+                                            post p2 
+                                            ON p1.offering_item_id = p2.requesting_item_id
+                                            AND p1.requesting_item_id = p2.offering_item_id
+                                        JOIN 
+                                            item item_offered_by_other 
+                                            ON p2.offering_item_id = item_offered_by_other.item_id
+                                        JOIN 
+                                            item item_requested_by_other 
+                                            ON p2.requesting_item_id = item_requested_by_other.item_id
+                                        WHERE 
+                                            p1.posting_user_id = ?
+                                            AND p2.posting_user_id != ?
+                                            AND p1.is_matched = FALSE
+                                            AND p2.is_matched = FALSE
+                                            AND (
+                                                -- Condition for negotiable posts
+                                                (p1.is_negotiable = TRUE AND p2.is_negotiable = TRUE)
+                                                OR 
+                                                -- Condition for exact matching amounts
+                                                (p1.is_negotiable = FALSE 
+                                                AND p2.is_negotiable = FALSE
+                                                AND p1.requesting_amount = p2.offering_amount
+                                                AND p2.requesting_amount = p1.offering_amount)
+                                            );
                                             `, [userId, userId]);
-
         if (result.length > 0) {
+            
             return res.send({posts: result});
         }
         else {

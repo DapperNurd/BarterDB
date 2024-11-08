@@ -122,6 +122,29 @@ export default function Dashboard(props) {
         populatePosts();
     };
 
+    const MatchPost = async (matchPostId) => {
+        const createTransactionResponse = await axios.post("http://localhost:5000/transactions/create-transaction", { 
+            userId: user.user_id,
+            post1: viewingPost.post_id,
+            post2: matchPostId
+        });
+        if(!createTransactionResponse.data.status) {
+            setErrorMsg('Error: Failed to create post.');
+            return false;
+        }
+
+        // // Reset Values (TODO: MAKE THIS A FUNCTION)
+        // setRequestingItemName(items[0].name);
+        // setOfferingItemName(items[0].name);
+        // setRequestingItemAmt(1);
+        // setOfferingItemAmt(1);
+        // setIsNegotiable(0);
+
+        // setShowCreatePostPopup(false);
+        // RefreshAllDashboards();
+        // return true;
+    };
+
     // Function to refresh the posts
     const populatePosts = async () => {
         // View posts
@@ -218,7 +241,7 @@ export default function Dashboard(props) {
                 <p>Requesting Item: <span>{viewingPost.requesting}</span> {viewingPost.requestingAmount > 1 ? "x" + viewingPost.requestingAmount : ""}</p>
                 {viewingPost.isNegotiable > 0 && <p>Willing to negotiate.</p>}
                 <div className={styles.button_group}>
-                    <button className={`${styles.button} ${styles.edit_button}`} onClick={() => {}}>Match Post</button>
+                    <button className={`${styles.button} ${styles.edit_button}`} onClick={() => {MatchPost(viewingPost.matchPost)}}>Match Post</button>
                 </div>
             </div>
         </Popup>
