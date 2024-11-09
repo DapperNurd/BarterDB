@@ -182,23 +182,4 @@ router.post('/delete-post', async (req, res) => {
     }
 });
 
-router.get('/get-items', async (req, res) => {
-    const userId = req.body.userId;
-
-    try { // This gets all posts associated with the userId, and also gets the item names associating with the post item id's (just so we don't have to query again later)
-        const [result] = await db.query('SELECT * FROM item');
-
-        if (result.length > 0) {
-            return res.send({items: result});
-        }
-        else {
-            res.send({message: 'No items found.'});
-        }
-    }
-    catch (err) {
-        console.error("Error occurred:", err);
-        return res.status(500).send({ err: err });
-    }
-});
-
 module.exports = router;

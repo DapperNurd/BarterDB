@@ -1,5 +1,5 @@
 import './App.css';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Navigate } from 'react-router-dom';
@@ -22,6 +22,8 @@ export default function App() {
     const [user, setUser] = useState(null);
 	const [isLoading, setIsLoading] = useState(true);
 
+    let navigate = useNavigate();
+
     useEffect(() => {
 		const getLoginStatus = async () => {
 			try {
@@ -29,9 +31,18 @@ export default function App() {
 				// Then, we use that userId to get the user's info from the database.
 				// This is so info that might change on a whim is not saved in the otherwise static session.
 				const session = await axios.get("http://localhost:5000/users/login");
-				const user = await axios.post("http://localhost:5000/users/get-user", { userId: session.data.userId });
-				if(!user.data.message) {
-					setUser(user.data.user);
+				const userResult = await axios.post("http://localhost:5000/users/get-user", { userId: session.data.userId });
+				if(!userResult.data.message) {
+					if(userResult.data.user.access_level < 0) {
+						console.log("user is suspended");
+						axios.get("http://localhost:5000/users/logout").then((response) => {
+							setUser(null);
+							navigate("/login");
+							return;
+						});
+					}
+
+					setUser(userResult.data.user);
 				}
 				setIsLoading(false);
 			}

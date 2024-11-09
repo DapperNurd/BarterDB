@@ -28,12 +28,19 @@ export default function Dashboard(props) {
     const [allPosts, setAllPosts] = useState([]);
 
     const [requestingItemName, setRequestingItemName] = useState("");
-    const [requestingItemAmt, setRequestingItemAmt] = useState(1);
+    const [requestingItemAmt, setRequestingItemAmt] = useState(-1);
     const [offeringItemName, setOfferingItemName] = useState("");
-    const [offeringItemAmt, setOfferingItemAmt] = useState(1);
+    const [offeringItemAmt, setOfferingItemAmt] = useState(-1);
     const [isNegotiable, setIsNegotiable] = useState(0);
 
     const [errorMsg, setErrorMsg] = useState('');
+
+    useEffect(() => {
+        setOfferingItemName("");
+        setOfferingItemAmt(-1);
+        setRequestingItemName("");
+        setRequestingItemAmt(-1);
+    }, [showCreatePostPopup, showEditPostPopup, showViewPostPopup, showMatchPostPopup]);
 
     const SetPostObject = (data) => {
         setRequestingItemName(data.requesting);
@@ -44,7 +51,6 @@ export default function Dashboard(props) {
     }
 
     const CreatePost = async () => {
-
         const requestingItem = items.find(item => item.name.toLowerCase() === requestingItemName.toLowerCase());
         const offeringItem = items.find(item => item.name.toLowerCase() === offeringItemName.toLowerCase());
 
@@ -78,6 +84,60 @@ export default function Dashboard(props) {
         RefreshAllDashboards();
         return true;
     };
+
+    const UpdateRequestingItemData = (e) => {
+        if(offeringItemAmt < 0) setOfferingItemAmt(1);
+
+        let requestingItem = items.find(item => item.name.toLowerCase() === requestingItemName.toLowerCase());
+        if(!requestingItem) return;
+        
+        let offeringItem = null;
+
+        let value = parseFloat(e);
+        if(isNaN(value)) {
+            // This is being called from the select dropdown
+            offeringItem = items.find(item => item.name.toLowerCase() === e.toLowerCase());
+            if(!offeringItem) return;
+
+            value = offeringItem.value;
+            if(requestingItemAmt >= 0) setOfferingItemAmt(requestingItemAmt * requestingItem.value / offeringItem.value);
+            else setRequestingItemAmt(requestingItem.value / value);
+        }
+        else {
+            // This is being called from the amount input field
+            offeringItem = items.find(item => item.name.toLowerCase() === offeringItemName.toLowerCase());
+            if(!offeringItem) return;
+
+            setRequestingItemAmt(offeringItem.value / requestingItem.value * value);
+        }
+    }
+
+    const UpdateOfferingItemData = (e) => {
+        if(requestingItemAmt < 0) setRequestingItemAmt(1);
+
+        let offeringItem = items.find(item => item.name.toLowerCase() === offeringItemName.toLowerCase());
+        if(!offeringItem) return;
+
+        let requestingItem = null;
+
+        let value = parseFloat(e);
+        if(isNaN(value)) {
+            // This is being called from the select dropdown
+            requestingItem = items.find(item => item.name.toLowerCase() === e.toLowerCase());
+            if(!requestingItem) return;
+
+            value = requestingItem.value;
+            if(offeringItemAmt >= 0) setRequestingItemAmt(offeringItemAmt * offeringItem.value / requestingItem.value);
+            else setOfferingItemAmt(offeringItem.value / value);
+        }
+        else {
+            // This is being called from the amount input field
+            requestingItem = items.find(item => item.name.toLowerCase() === requestingItemName.toLowerCase());
+            if(!requestingItem) return;
+
+            setOfferingItemAmt(requestingItem.value / offeringItem.value * value);
+        }
+    }
 
     const UpdatePost = async () => {
 
@@ -132,17 +192,6 @@ export default function Dashboard(props) {
             setErrorMsg('Error: Failed to create post.');
             return false;
         }
-
-        // // Reset Values (TODO: MAKE THIS A FUNCTION)
-        // setRequestingItemName(items[0].name);
-        // setOfferingItemName(items[0].name);
-        // setRequestingItemAmt(1);
-        // setOfferingItemAmt(1);
-        // setIsNegotiable(0);
-
-        // setShowCreatePostPopup(false);
-        // RefreshAllDashboards();
-        // return true;
     };
 
     // Function to refresh the posts
@@ -158,7 +207,7 @@ export default function Dashboard(props) {
     };
 
     const getItems = async () => {
-        const response = await axios.get("http://localhost:5000/posts/get-items");
+        const response = await axios.get("http://localhost:5000/items/get-items");
         if(!response.data.message) {
             setItems(response.data.items);
         }
@@ -183,26 +232,28 @@ export default function Dashboard(props) {
             <h2>Create New Post</h2>
             <div className={styles.error_message}>{errorMsg}</div>
             <div className={styles.popup_section}>
-                <label htmlFor="offering_item_list">Item to offer:</label>
-                <select name="offering_item_list" id="offering_item_list" className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); }}>
+                <label htmlFor="requesting_item_list">Item to request:</label>
+                <select name="requesting_item_list" id="requesting_item_list" defaultValue={'DEFAULT'} className={styles.popup_select} onChange={(e) => { setRequestingItemName(e.target.value); UpdateOfferingItemData(e.target.value); }}>
+                    <option hidden disabled value="DEFAULT"></option>
                     {items.map((item, index) => (
                         <option key={index} value={item.name.toLowerCase()}>
                             {item.name}
                         </option>
                     ))}
                 </select>
-                <input type="number" id="offering_amount" name="quantity" min="1" max="99" defaultValue="1" onChange={(e) => { setOfferingItemAmt(e.target.value); }}/>
+                <input type="number" id="requesting_amount" name="quantity" min="1" max="99" value={requestingItemAmt < 0 ? "" : requestingItemAmt} onChange={(e) => { setRequestingItemAmt(e.target.value); UpdateOfferingItemData(e.target.value); }}/>
             </div>
             <div className={styles.popup_section}>
-                <label htmlFor="requesting_item_list">Item to request:</label>
-                <select name="requesting_item_list" id="requesting_item_list" className={styles.popup_select} onChange={(e) => { setRequestingItemName(e.target.value); }}>
+                <label htmlFor="offering_item_list">Item to offer:</label>
+                <select name="offering_item_list" id="offering_item_list" defaultValue={'DEFAULT'} className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); UpdateRequestingItemData(e.target.value); }}>
+                    <option hidden disabled value="DEFAULT"></option>
                     {items.map((item, index) => (
                         <option key={index} value={item.name.toLowerCase()}>
                             {item.name}
                         </option>
                     ))}
                 </select>
-                <input type="number" id="requesting_amount" name="quantity" min="1" max="99" defaultValue="1" onChange={(e) => { setRequestingItemAmt(e.target.value); }}/>
+                <input type="number" id="offering_amount" name="quantity" min="1" max="99" value={offeringItemAmt < 0 ? "" : offeringItemAmt} onChange={(e) => { setOfferingItemAmt(e.target.value); UpdateRequestingItemData(e.target.value); }}/>
             </div>
             <div className={styles.popup_section}>
                 <button className={styles.create_button} onClick={CreatePost}>Create</button>
@@ -302,7 +353,7 @@ export default function Dashboard(props) {
         }
         else {
             return  <div className={styles.create_post_button}>
-                        <button onClick={() => { setShowCreatePostPopup(true); setRequestingItemName(items[0].name); setOfferingItemName(items[0].name); }}>Create New Post</button>
+                        <button onClick={() => { setShowCreatePostPopup(true); }}>Create New Post</button>
                     </div>
         }
     };

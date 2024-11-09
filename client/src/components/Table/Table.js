@@ -9,6 +9,7 @@ export default function Table(props) {
     const [filtering, setFiltering] = useState('');
 
     const title = props.title ?? "";
+    const meta = props.meta ?? {};
 
     const table = useReactTable({
         data: props.data,
@@ -23,6 +24,7 @@ export default function Table(props) {
         onSortingChange: setSorting,
         getFilteredRowModel: getFilteredRowModel(),
         onGlobalFilterChange: setFiltering,
+        meta: meta
     });
 
     return (

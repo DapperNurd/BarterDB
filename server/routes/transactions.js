@@ -15,7 +15,7 @@ router.post('/create-transaction', async (req, res) => {
     if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
 
     try {
-        const [result] = await db.query('INSERT INTO transaction (post1_id, post2_id, hash_code)VALUES(?, ?, 0000000000000000)', [post1, post2]);
+        const [result] = await db.query('INSERT INTO transaction (post1_id, post2_id, hash_code) VALUES (?, ?, 0000000000000000)', [post1, post2]);
 
         if (result) {
             const [result2] = await db.query('UPDATE post SET is_matched = true WHERE post_id = ? OR post_id = ?', [post1, post2]);

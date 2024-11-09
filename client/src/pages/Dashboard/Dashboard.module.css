@@ -122,14 +122,13 @@
 
 .popup_section {
     display: grid;
-    grid-template-columns: 2fr 3fr auto;
+    grid-template-columns: 2fr 3fr 1.25fr;
     gap: 15px;
     padding-bottom: 15px;
 }
 
 .popup_section input {
-    width: 40px;
-    text-align: center;
+    text-align: right;
     padding-left: 2px;
 }
 

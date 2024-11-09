@@ -29,15 +29,32 @@
     background-color: rgba(255, 255, 255, 0.1);
 }
 
+.popup_section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
 .popup_button {
     width: auto;
     padding: 10px;
     font-size: 1.1rem;
     border: 1px solid white;
     border-radius: 10px;
-    margin-top: 12px;
+    margin-top: 18px;
 }
 
 .popup_button:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.create_item_popup_row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.popup_section input[type=number]::-webkit-inner-spin-button, 
+.popup_section input[type=number]::-webkit-outer-spin-button {
+    opacity: 1;
 }

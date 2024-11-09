@@ -216,6 +216,7 @@ router.get('/login', (req, res) => {
         res.send({loggedIn: false});
     }
 });
+
 router.post('/login', async (req, res) => {
 
     const email = req.body.email;
@@ -229,7 +230,7 @@ router.post('/login', async (req, res) => {
             if(passwordMatch) {
                 req.session.userId = result[0].user_id;
                 req.session.save();
-                return res.send({userId: result[0].user_id});
+                return res.send({userId: result[0].user_id, access_level: result[0].access_level});
             }
             else {
                 res.send({message: 'Wrong email/password combination.'});

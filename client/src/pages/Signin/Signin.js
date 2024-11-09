@@ -30,6 +30,12 @@ export default function Signin(props) {
 			password: password,
 		}, { withCredentials: true })
 		.then(async (response) => {
+			
+			if(response.data.access_level < 0) {
+				setLoginStatus("Your account has been suspended.");
+				return;
+			}
+
 			setLoginStatus(response.data.message ?? response.data.userId);
 			if(!response.data.message) {
 				const user = await axios.post("http://localhost:5000/users/get-user", { userId: response.data.userId });
