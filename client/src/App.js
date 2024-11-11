@@ -11,6 +11,7 @@ import Dashboard from './pages/Dashboard/Dashboard';
 import AdminUserDashboard from './pages/Admin/AdminUserDashboard/AdminUserDashboard';
 import AccountSettings from './pages/Account/AccountSettings/AccountSettings';
 import AccountPartnership from './pages/Account/AccountPartnership/AccountPartnership';
+import AccountInventory from './pages/Account/AccountInventory/AccountInventory';
 import Error from './pages/Error/Error';
 import AdminItemDashboard from './pages/Admin/AdminItemDashboard/AdminItemDashboard';
 import AdminTransactionDashboard from './pages/Admin/AdminTransactionDashboard/AdminTransactionDashboard';
@@ -74,6 +75,7 @@ export default function App() {
 					
 					<Route path="/account" element={user ? <AccountSettings user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="/account/partnership" element={user ? <AccountPartnership user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
+					<Route path="/account/inventory" element={user ? <AccountInventory user={user} setUser={setUser} /> : <Navigate to="/login"/>} />
 					<Route path="*" element={<Error />} />
 				</Routes>
 			</div>

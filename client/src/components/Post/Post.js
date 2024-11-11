@@ -57,7 +57,7 @@ export default function Post(props) {
             <div className={styles.post_line}>
                 <div className={styles.post_label}>Offering Item:</div>
                 <div className={`${styles.post_item} ${styles.offering_item}`}>{props.data.offering_item_name}</div>
-                <div className={styles.post_amt}>{props.data.offering_amount > 1? "x" + props.data.offering_amount : ""}</div>
+                <div className={styles.post_amt}>x{props.data.offering_amount}</div>
             </div>
             <div className={styles.post_line}>
                 <div className={styles.post_label}>Requesting Item:</div>

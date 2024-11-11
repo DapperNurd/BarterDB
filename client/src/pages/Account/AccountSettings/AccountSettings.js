@@ -143,6 +143,7 @@ export default function Account(props) {
                 <Sidebar user={props.user} setUser={props.setUser} usePermissions={true} >
                     <NavLink to="/account">Settings</NavLink>
                     <NavLink to="/account/partnership">Partnership</NavLink>
+                    <NavLink to="/account/inventory">Inventory</NavLink>
                 </Sidebar>
                 <section className={styles.section}>
                     <h1>Account Settings</h1>
