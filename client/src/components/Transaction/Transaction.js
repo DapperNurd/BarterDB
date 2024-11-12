@@ -6,17 +6,10 @@ export default function Transaction(props) {
 
     let user = props.user;
 
-    const isUsers = props.isUsers ?? false;
-
     const [ownsPrimaryPost, setOwnsPrimaryPost] = useState(false);
 
     const [primaryPost, setPrimaryPost] = useState({});
     const [secondaryPost, setSecondaryPost] = useState({});
-
-    const [primaryItem, setPrimaryItem] = useState({});
-    const [secondaryItem, setSecondaryItem] = useState({});
-
-    const [errorMsg, setErrorMsg] = useState('');
 
     const CheckOwnership = async () => {
         const ownershipResponse = await axios.post("http://localhost:5000/posts/get-post-owner", { userId: user.user_id, postId: props.data.primary_post_id });
@@ -28,14 +21,14 @@ export default function Transaction(props) {
     const GetPosts = async () => {
         const primaryPostResponse = await axios.post("http://localhost:5000/posts/get-post", { postId: props.data.primary_post_id });
         if(primaryPostResponse.data.message) {
-            setErrorMsg('Failed to get primary post.');
+            console.log('Error: Failed to get primary post.');
             return;
         }
         setPrimaryPost(primaryPostResponse.data.post);
 
         const secondaryPostResponse = await axios.post("http://localhost:5000/posts/get-post", { postId: props.data.secondary_post_id });
         if(secondaryPostResponse.data.message) {
-            setErrorMsg('Failed to get secondary post.');
+            console.log('Error: Failed to get secondary post.');
             return;
         }
         setSecondaryPost(secondaryPostResponse.data.post);
@@ -70,7 +63,7 @@ export default function Transaction(props) {
                 state: props.data.state,
                 primary_approved: props.data.primary_approved,
                 secondary_approved: props.data.secondary_approved,
-                proposing_user_id: props.data.proposing_user_id,
+                proposing_post_id: props.data.proposing_post_id,
                 proposing_primary_request_amt: props.data.proposing_primary_request_amt,
                 proposing_primary_offer_amt: props.data.proposing_primary_offer_amt,
                 createdAt: props.data.created_at,
@@ -83,7 +76,7 @@ export default function Transaction(props) {
     }
 
     const date = () => {
-        if(props.data.created_at == props.data.updated_at) {
+        if(props.data.created_at === props.data.updated_at) {
             return  <div> Created at: 
                         <time>{
                             new Date(props.data.created_at).toLocaleDateString('en-US', { 
@@ -111,23 +104,31 @@ export default function Transaction(props) {
         }
     }
 
-    const hash = props.data.ownsPrimaryPost ? props.data.hash_code.substring(0, 8) : props.data.hash_code.substring(8, 16);
+    // const hash = ownsPrimaryPost ? props.data.hash_code.substring(0, 8) : props.data.hash_code.substring(8, 16);
+
+    const userHasApproved = (ownsPrimaryPost && props.data.primary_approved) || (!ownsPrimaryPost && props.data.secondary_approved);
+
+    const workingTransaction = ownsPrimaryPost ? primaryPost : secondaryPost;
+
+    const offeringAmt = ownsPrimaryPost ? props.data.proposing_primary_offer_amt ?? workingTransaction.offering_amount : props.data.proposing_primary_request_amt ?? workingTransaction?.offering_amount;
+    const requestingAmt = ownsPrimaryPost ? props.data.proposing_primary_request_amt ?? workingTransaction.requesting_amount : props.data.proposing_primary_offer_amt ?? workingTransaction?.requesting_amount;
 
     return props.data && (
         <button className={styles.post} onClick={OpenPost}>
+            {props.data.state <= 0 && props.data.proposing_post_id && props.data.proposing_post_id !== workingTransaction.post_id && <div className={styles.post_line}><em>NEW PROPOSAL</em></div>}
             <div className={styles.post_line}>
                 <div className={styles.post_label}>Trading:</div>
-                <div className={`${styles.post_item} ${styles.offering_item}`}>{ownsPrimaryPost ? primaryPost.offering_item_name : secondaryPost.offering_item_name}</div>
-                <div className={styles.post_amt}>x{ownsPrimaryPost ? primaryPost.offering_amount : secondaryPost.offering_amount}</div>
+                <div className={`${styles.post_item} ${styles.offering_item}`}>{workingTransaction.offering_item_name}</div>
+                <div className={styles.post_amt}>x{offeringAmt}</div>
             </div>
             <div className={styles.post_line}>
                 <div className={styles.post_label}>For:</div>
-                <div className={`${styles.post_item} ${styles.requesting_item}`}>{ownsPrimaryPost ? primaryPost.requesting_item_name : secondaryPost.requesting_item_name}</div>
-                <div className={styles.post_amt}>x{ownsPrimaryPost ? primaryPost.requesting_amount : secondaryPost.requesting_amount}</div>
+                <div className={`${styles.post_item} ${styles.requesting_item}`}>{workingTransaction.requesting_item_name}</div>
+                <div className={styles.post_amt}>x{requestingAmt}</div>
             </div>
             {primaryPost.is_negotiable > 0 && <div className={styles.post_line}><em>Negotiating.</em></div>}
-            {props.data.state <= 0 && <div className={styles.post_line}><em>Awaiting approval.</em></div>}
-            {date()}
+            {props.data.state <= 0 && <div className={styles.post_line}><em>{(!userHasApproved) ? "Awaiting your approval." : "Awaiting other party's approval."}</em></div>}
+            {/* {date()} */}
         </button>
     );
 }

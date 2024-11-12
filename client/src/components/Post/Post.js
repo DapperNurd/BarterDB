@@ -16,9 +16,11 @@ export default function Post(props) {
                 isNegotiable: props.data.is_negotiable,
                 createdAt: props.data.created_at,
                 updatedAt: props.data.updated_at,
-                matchPost: props.data.matching_post_id
+                matchPost: props.data.matching_post_id,
+                user_id_receiving: props.data.user_id_receiving,
+                user_id_giving: props.data.user_id_giving,
             })
-
+            
             props.setShowPopup(true);
         }
     }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+// import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 
 import Header from "../../components/Header/Header";
@@ -43,6 +43,8 @@ export default function Dashboard(props) {
     const [proposingRequestAmount, setProposingRequestAmount] = useState(-1);
     const [proposingOfferAmount, setProposingOfferAmount] = useState(-1);
 
+    const [enteredHash, setEnteredHash] = useState('');
+
     const [errorMsg, setErrorMsg] = useState('');
 
     useEffect(() => {
@@ -63,11 +65,11 @@ export default function Dashboard(props) {
     }
 
     const CreatePost = async () => {
-        if(requestingItemName == "" || offeringItemName == "") {
+        if(requestingItemName === "" || offeringItemName === "") {
             setErrorMsg('Please fill in all required fields.');
             return false;
         }
-        if(requestingItemName == offeringItemName) {
+        if(requestingItemName === offeringItemName) {
             setErrorMsg('You cannot request and offer the same item.');
             return false;
         }
@@ -264,7 +266,7 @@ export default function Dashboard(props) {
         PopulatePosts();
         GetPartnership();
         GetItems();
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Create New Post popup
     const createPostPopup = (
@@ -334,7 +336,7 @@ export default function Dashboard(props) {
                 <p>Requesting Item: <span>{viewingPost.requesting}</span> {viewingPost.requestingAmount > 1 ? "x" + viewingPost.requestingAmount : ""}</p>
                 {viewingPost.isNegotiable > 0 && <p>Willing to negotiate.</p>}
                 <p className={styles.created}>Created at: <time>{new Date(viewingPost.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>
-                {viewingPost.createdAt != viewingPost.updatedAt && <p className={styles.created}>Updated at: <time>{new Date(viewingPost.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>}
+                {viewingPost.createdAt !== viewingPost.updatedAt && <p className={styles.created}>Updated at: <time>{new Date(viewingPost.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>}
                 <div className={styles.button_group}>
                     <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { SetPostObject(viewingPost); setShowViewPostPopup(false); setShowEditPostPopup(true); }}>Edit Post</button>
                     <button className={`${styles.button} ${styles.delete_button}`} onClick={() => { DeletePost(viewingPost.post_id) }}>Delete Post</button>
@@ -395,11 +397,10 @@ export default function Dashboard(props) {
     );
 
     const ApproveTransaction = async () => {
-        const response = await axios.post("http://localhost:5000/transactions/update-transaction-approval", { 
+        const response = await axios.post("http://localhost:5000/transactions/approve-transaction", { 
             userId: user.user_id, 
             transactionId: viewingTransaction.transaction_id, 
-            isPrimary: viewingTransaction.ownsPrimaryPost, 
-            approval: 1 
+            isPrimary: viewingTransaction.ownsPrimaryPost
         });
         if(!response.data.status) {
             setErrorMsg('Failed to approve transaction.');
@@ -411,29 +412,71 @@ export default function Dashboard(props) {
         RefreshAllDashboards();
     }
 
-    let workingTransaction = viewingTransaction.ownsPrimaryPost ? viewingTransaction.primary_post : viewingTransaction.secondary_post;
+    const SubmitHash = async () => {
+        if(enteredHash !== hash) {
+            setErrorMsg('Invalid code.');
+            return;
+        }
+        const response = await axios.post("http://localhost:5000/transactions/confirm-hash", { 
+            userId: user.user_id, 
+            transactionId: viewingTransaction.transaction_id, 
+            isPrimary: viewingTransaction.ownsPrimaryPost
+        });
+        if(!response.data.status) {
+            setErrorMsg('Failed to submit hash.');
+            return;
+        }
+
+        setShowViewTransactionPopup(false);
+        setViewingTransaction([]);
+        RefreshAllDashboards();
+    }
+
+    const workingTransaction = viewingTransaction.ownsPrimaryPost ? viewingTransaction.primary_post : viewingTransaction.secondary_post;
     const hash = viewingTransaction.ownsPrimaryPost ? viewingTransaction.hash_code?.substring(0, 8) : viewingTransaction.hash_code?.substring(8, 16);
+    const userHasApproved = (viewingTransaction?.ownsPrimaryPost && viewingTransaction?.primary_approved) || (!viewingTransaction?.ownsPrimaryPost && viewingTransaction?.secondary_approved);
+    const offeringAmt = viewingTransaction?.ownsPrimaryPost ? viewingTransaction.proposing_primary_offer_amt ?? workingTransaction?.offering_amount : viewingTransaction.proposing_primary_request_amt ?? workingTransaction?.offering_amount; //viewingTransaction.proposing_primary_offer_amt ?? workingTransaction?.offering_amount;
+    const requestingAmt = viewingTransaction?.ownsPrimaryPost ? viewingTransaction.proposing_primary_request_amt ?? workingTransaction?.requesting_amount : viewingTransaction.proposing_primary_offer_amt ?? workingTransaction?.requesting_amount; //viewingTransaction.proposing_primary_request_amt ?? workingTransaction?.requesting_amount;
+    const postCreator = user.user_id === workingTransaction?.posting_user_id;
     const viewTransactionPopup = (
         <Popup trigger={setShowViewTransactionPopup}>
             <div className={styles.post_popup}>
                 <h2>Transaction Details</h2>
+
                 {viewingTransaction.ownsPrimaryPost ? <h3>Primary Post</h3> : <h3>Secondary Post</h3>}
+                {viewingTransaction?.transaction_id}
+
+                {viewingTransaction.state <= 0 && viewingTransaction.proposing_post_id && viewingTransaction.proposing_post_id !== workingTransaction.post_id && <h3>Other party has proposed:</h3>}
                 <div className={styles.error_message}>{errorMsg}</div>
-                <p>Offering Item: <span>{workingTransaction?.offering_item_name}</span> x{workingTransaction?.offering_amount}</p>
-                <p>Requesting Item: <span>{workingTransaction?.requesting_item_name}</span> x{workingTransaction?.requesting_amount}</p>
-                {viewingTransaction.state > 0 && <p>Hash code: {hash}</p>}
+                <p>Offering Item: <span>{workingTransaction?.offering_item_name}</span> x{offeringAmt}</p>
+                <p>Requesting Item: <span>{workingTransaction?.requesting_item_name}</span> x{requestingAmt}</p>
+                {postCreator && viewingTransaction.state > 0 && <p>Confirmation code: {hash}</p>}
                 {viewingTransaction.isNegotiable > 0 && <p>Willing to negotiate.</p>}
-                {/* <p className={styles.created}>Created at: <time>{new Date(viewingTransaction.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p> */}
-                {/* {viewingTransaction.createdAt != viewingTransaction.updatedAt && <p className={styles.created}>Updated at: <time>{new Date(viewingTransaction.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>} */}
-                <div className={styles.button_group}>
-                    {((viewingTransaction.ownsPrimaryPost && viewingTransaction.primary_approved <= 0) || !viewingTransaction.ownsPrimaryPost && viewingTransaction.secondary_approved <= 0) 
-                        ? <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { ApproveTransaction(); }}>Approve</button>
-                        : viewingTransaction.state < 1 && <button className={`${styles.button}`} disabled>Approved</button>
-                    }
-                    {viewingTransaction.primary_post?.is_negotiable > 0 && viewingTransaction.secondary_post?.is_negotiable > 0 && viewingTransaction.state < 1 &&
-                        <button className={`${styles.button}`} onClick={() => { setShowViewTransactionPopup(false); setShowNewTransactionProposalPopup(true); }}>Make Proposal</button>
-                    }
-                </div>
+                {
+                    postCreator // If the user is the one who made the post
+                    ?   <div className={styles.button_group}>
+                            {!userHasApproved && viewingTransaction.state < 1
+                                ? <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { ApproveTransaction(); }}>Approve</button>
+                                : viewingTransaction.state < 1 && <button className={`${styles.button}`} disabled>Approved</button>
+                            }
+                            {viewingTransaction.primary_post?.is_negotiable > 0 && viewingTransaction.secondary_post?.is_negotiable > 0 && viewingTransaction.state < 1 && !userHasApproved &&
+                                <button className={`${styles.button}`} onClick={() => { setProposingOfferAmount(workingTransaction?.offering_amount); setProposingRequestAmount(workingTransaction?.requesting_amount); setShowViewTransactionPopup(false); setShowNewTransactionProposalPopup(true); }}>Make Proposal</button>
+                            }
+                        </div>
+                    :   <div className={styles.button_group}>
+                            {
+                                ((viewingTransaction.ownsPrimaryPost && !viewingTransaction.primary_approved) || (!viewingTransaction.ownsPrimaryPost && !viewingTransaction.secondary_approved))
+                                ?   <>
+                                    <div>
+                                     <label>Enter code from partner:</label>
+                                     <input type="text" placeholder={hash} maxLength={8} onChange={(e) => { setEnteredHash(e.target.value); }} />
+                                    </div>
+                                    <button className={`${styles.button}`} onClick={() => { SubmitHash(); }}>Submit</button>
+                                    </>
+                                :   <div>Awaiting other party's confirmation.</div>
+                            }
+                        </div>
+                }
             </div>
         </Popup>
     );
@@ -444,8 +487,9 @@ export default function Dashboard(props) {
             userId: user.user_id,
             transactionId: viewingTransaction.transaction_id,
             proposingPostId: proposingPostId,
-            proposingRequestAmount: requestingItemAmt,
-            proposingOfferAmount: offeringItemAmt
+            proposingRequestAmount: viewingTransaction?.ownsPrimaryPost ? proposingRequestAmount : proposingOfferAmount,
+            proposingOfferAmount: viewingTransaction?.ownsPrimaryPost ? proposingOfferAmount : proposingRequestAmount,
+            isPrimary: viewingTransaction.ownsPrimaryPost
         });
         if(!response.data.status) {
             setErrorMsg('Failed to make proposal.');
@@ -460,22 +504,22 @@ export default function Dashboard(props) {
     const newTransactionProposalPopup = (
         <Popup trigger={setShowNewTransactionProposalPopup}>
             <div className={styles.post_popup}>
-            <h2>New Proposal</h2>
-            <div className={styles.error_message}>{errorMsg}</div>
-            <div className={styles.popup_section}>
-                <label htmlFor="offering_item_list_label">Offering Item: </label>
-                <label htmlFor="offering_item_list_item">{workingTransaction?.offering_item_name}</label>
-                <input type="number" id="offering_amount_edit" name="quantity" min="1" max="99" defaultValue={workingTransaction?.offering_amount} onChange={(e) => { setOfferingItemAmt(e.target.value); }}/>
-            </div>
-            <div className={styles.popup_section}>
-                <label htmlFor="requesting_item_list_label">Requesting Item:</label>
-                <label htmlFor="requesting_item_list_item">{workingTransaction?.requesting_item_name}</label>
-                <input type="number" id="requesting_amount_edit" name="quantity" min="1" max="99" defaultValue={workingTransaction?.requesting_amount} onChange={(e) => { setRequestingItemAmt(e.target.value); }}/>
-            </div>
-            <div className={styles.popup_section}>
-                <button className={styles.create_button} onClick={SendProposal}>Send Proposal</button>
-                <button className={styles.create_button} onClick={UpdatePost}>Revert</button>
-            </div>
+                <h2>New Proposal</h2>
+                <div className={styles.error_message}>{errorMsg}</div>
+                <div className={styles.popup_section}>
+                    <label htmlFor="offering_item_list_label">Offering Item: </label>
+                    <label htmlFor="offering_item_list_item">{workingTransaction?.offering_item_name}</label>
+                    <input type="number" id="offering_amount_edit" name="quantity" min="1" max="99" value={proposingOfferAmount} defaultValue={workingTransaction?.offering_amount} onChange={(e) => { setProposingOfferAmount(e.target.value); }}/>
+                </div>
+                <div className={styles.popup_section}>
+                    <label htmlFor="requesting_item_list_label">Requesting Item:</label>
+                    <label htmlFor="requesting_item_list_item">{workingTransaction?.requesting_item_name}</label>
+                    <input type="number" id="requesting_amount_edit" name="quantity" min="1" max="99" value={proposingRequestAmount} defaultValue={workingTransaction?.requesting_amount} onChange={(e) => { setProposingRequestAmount(e.target.value); }}/>
+                </div>
+                <div className={styles.popup_section}>
+                    <button className={styles.create_button} onClick={SendProposal}>Send Proposal</button>
+                    <button className={styles.create_button} onClick={() => { setProposingOfferAmount(workingTransaction?.offering_amount); setProposingRequestAmount(workingTransaction?.requesting_amount); }}>Revert</button>
+                </div>
             </div>
         </Popup>
     );
