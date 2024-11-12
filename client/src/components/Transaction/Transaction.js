@@ -113,9 +113,11 @@ export default function Transaction(props) {
     const offeringAmt = ownsPrimaryPost ? props.data.proposing_primary_offer_amt ?? workingTransaction.offering_amount : props.data.proposing_primary_request_amt ?? workingTransaction?.offering_amount;
     const requestingAmt = ownsPrimaryPost ? props.data.proposing_primary_request_amt ?? workingTransaction.requesting_amount : props.data.proposing_primary_offer_amt ?? workingTransaction?.requesting_amount;
 
+    const negotiating = primaryPost.is_negotiable > 0 && secondaryPost.is_negotiable > 0;
+
     return props.data && (
         <button className={styles.post} onClick={OpenPost}>
-            {props.data.state <= 0 && props.data.proposing_post_id && props.data.proposing_post_id !== workingTransaction.post_id && <div className={styles.post_line}><em>NEW PROPOSAL</em></div>}
+            {negotiating && props.data.state <= 0 && props.data.proposing_post_id && props.data.proposing_post_id !== workingTransaction.post_id && <div className={styles.post_line}><em>NEW PROPOSAL</em></div>}
             <div className={styles.post_line}>
                 <div className={styles.post_label}>Trading:</div>
                 <div className={`${styles.post_item} ${styles.offering_item}`}>{workingTransaction.offering_item_name}</div>
@@ -126,7 +128,7 @@ export default function Transaction(props) {
                 <div className={`${styles.post_item} ${styles.requesting_item}`}>{workingTransaction.requesting_item_name}</div>
                 <div className={styles.post_amt}>x{requestingAmt}</div>
             </div>
-            {primaryPost.is_negotiable > 0 && <div className={styles.post_line}><em>Negotiating.</em></div>}
+            {negotiating && <div className={styles.post_line}><em>Negotiating.</em></div>}
             {props.data.state <= 0 && <div className={styles.post_line}><em>{(!userHasApproved) ? "Awaiting your approval." : "Awaiting other party's approval."}</em></div>}
             {/* {date()} */}
         </button>

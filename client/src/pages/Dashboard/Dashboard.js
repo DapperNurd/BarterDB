@@ -213,8 +213,9 @@ export default function Dashboard(props) {
         // matchPostId / viewingPost.matchPost --> the match to the post you clicked match on, i.e., a post you DID make
         const createTransactionResponse = await axios.post("http://localhost:5000/transactions/create-transaction", { 
             userId: user.user_id,
-            primaryPost: viewingPost.post_id,
-            secondaryPost: matchPostId
+            primaryPost: viewingPost,
+            secondaryPostId: matchPostId,
+            isNegotiating: viewingPost.isNegotiable
         });
         if(!createTransactionResponse.data.status) {
             setErrorMsg('Failed to match post.');
@@ -435,17 +436,13 @@ export default function Dashboard(props) {
     const workingTransaction = viewingTransaction.ownsPrimaryPost ? viewingTransaction.primary_post : viewingTransaction.secondary_post;
     const hash = viewingTransaction.ownsPrimaryPost ? viewingTransaction.hash_code?.substring(0, 8) : viewingTransaction.hash_code?.substring(8, 16);
     const userHasApproved = (viewingTransaction?.ownsPrimaryPost && viewingTransaction?.primary_approved) || (!viewingTransaction?.ownsPrimaryPost && viewingTransaction?.secondary_approved);
-    const offeringAmt = viewingTransaction?.ownsPrimaryPost ? viewingTransaction.proposing_primary_offer_amt ?? workingTransaction?.offering_amount : viewingTransaction.proposing_primary_request_amt ?? workingTransaction?.offering_amount; //viewingTransaction.proposing_primary_offer_amt ?? workingTransaction?.offering_amount;
+    const offeringAmt = viewingTransaction?.ownsPrimaryPost ? viewingTransaction?.proposing_primary_offer_amt ?? workingTransaction?.offering_amount : viewingTransaction?.proposing_primary_request_amt ?? workingTransaction?.offering_amount; //viewingTransaction.proposing_primary_offer_amt ?? workingTransaction?.offering_amount;
     const requestingAmt = viewingTransaction?.ownsPrimaryPost ? viewingTransaction.proposing_primary_request_amt ?? workingTransaction?.requesting_amount : viewingTransaction.proposing_primary_offer_amt ?? workingTransaction?.requesting_amount; //viewingTransaction.proposing_primary_request_amt ?? workingTransaction?.requesting_amount;
     const postCreator = user.user_id === workingTransaction?.posting_user_id;
     const viewTransactionPopup = (
         <Popup trigger={setShowViewTransactionPopup}>
             <div className={styles.post_popup}>
                 <h2>Transaction Details</h2>
-
-                {viewingTransaction.ownsPrimaryPost ? <h3>Primary Post</h3> : <h3>Secondary Post</h3>}
-                {viewingTransaction?.transaction_id}
-
                 {viewingTransaction.state <= 0 && viewingTransaction.proposing_post_id && viewingTransaction.proposing_post_id !== workingTransaction.post_id && <h3>Other party has proposed:</h3>}
                 <div className={styles.error_message}>{errorMsg}</div>
                 <p>Offering Item: <span>{workingTransaction?.offering_item_name}</span> x{offeringAmt}</p>

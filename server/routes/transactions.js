@@ -9,7 +9,9 @@ const { db, db_options } = require('../db.js');
 router.post('/create-transaction', async (req, res) => {
     const userId = req.body.userId;
     const primaryPost = req.body.primaryPost;
-    const secondaryPost = req.body.secondaryPost;
+    const secondaryPostId = req.body.secondaryPostId;
+    const isNegotiating = req.body.isNegotiating;
+
     // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
     // Basically makes it so you can't just get the user's info by knowing their user ID.
     if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
@@ -17,10 +19,10 @@ router.post('/create-transaction', async (req, res) => {
     const hashCode = "0000000000000000";
 
     try {
-        const [result] = await db.query('INSERT INTO transaction (primary_post_id, secondary_post_id, hash_code, proposing_post_id, proposing_primary_request_amt, proposing_primary_offer_amt) VALUES (?, ?, ?)', [primaryPost, secondaryPost, hashCode, primaryPost, primaryPost.requesting_amount, primaryPost.offering_amount]);
+        const [result] = await db.query('INSERT INTO transaction (primary_post_id, secondary_post_id, hash_code, proposing_post_id, proposing_primary_request_amt, proposing_primary_offer_amt, primary_approved) VALUES (?, ?, ?, ?, ?, ?, ?)', [primaryPost.post_id, secondaryPostId, hashCode, primaryPost.post_id, primaryPost.requestingAmount, primaryPost.offeringAmount, isNegotiating ? 1 : 0]);
 
         if (result) {
-            const [result2] = await db.query('UPDATE post SET is_matched = true WHERE post_id = ? OR post_id = ?', [primaryPost, secondaryPost]);
+            const [result2] = await db.query('UPDATE post SET is_matched = true WHERE post_id = ? OR post_id = ?', [primaryPost.post_id, secondaryPostId]);
             return res.send({status: true});
         }
         else {
