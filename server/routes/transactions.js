@@ -17,7 +17,7 @@ router.post('/create-transaction', async (req, res) => {
     const hashCode = "0000000000000000";
 
     try {
-        const [result] = await db.query('INSERT INTO transaction (primary_post_id, secondary_post_id, hash_code) VALUES (?, ?, ?)', [primaryPost, secondaryPost, hashCode]);
+        const [result] = await db.query('INSERT INTO transaction (primary_post_id, secondary_post_id, hash_code, proposing_post_id, proposing_primary_request_amt, proposing_primary_offer_amt) VALUES (?, ?, ?)', [primaryPost, secondaryPost, hashCode, primaryPost, primaryPost.requesting_amount, primaryPost.offering_amount]);
 
         if (result) {
             const [result2] = await db.query('UPDATE post SET is_matched = true WHERE post_id = ? OR post_id = ?', [primaryPost, secondaryPost]);
