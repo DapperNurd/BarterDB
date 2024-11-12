@@ -20,7 +20,7 @@ export default function Post(props) {
                 user_id_receiving: props.data.user_id_receiving,
                 user_id_giving: props.data.user_id_giving,
             })
-            
+
             props.setShowPopup(true);
         }
     }
@@ -57,14 +57,14 @@ export default function Post(props) {
     return props.data && (
         <button className={styles.post} onClick={OpenPost}>
             <div className={styles.post_line}>
-                <div className={styles.post_label}>Offering Item:</div>
-                <div className={`${styles.post_item} ${styles.offering_item}`}>{props.data.offering_item_name}</div>
-                <div className={styles.post_amt}>x{props.data.offering_amount}</div>
-            </div>
-            <div className={styles.post_line}>
                 <div className={styles.post_label}>Requesting Item:</div>
                 <div className={`${styles.post_item} ${styles.requesting_item}`}>{props.data.requesting_item_name}</div>
                 <div className={styles.post_amt}>x{props.data.requesting_amount}</div>
+            </div>
+            <div className={styles.post_line}>
+                <div className={styles.post_label}>Offering Item:</div>
+                <div className={`${styles.post_item} ${styles.offering_item}`}>{props.data.offering_item_name}</div>
+                <div className={styles.post_amt}>x{props.data.offering_amount}</div>
             </div>
             {props.data.is_negotiable > 0 && <div className={styles.post_line}><em>{isUsers ? "Willing to negotiate." : "Negotiating."}</em></div>}
             {date()}

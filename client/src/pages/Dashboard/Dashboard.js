@@ -167,18 +167,36 @@ export default function Dashboard(props) {
     }
 
     const UpdatePost = async () => {
+        if(requestingItemName === "" || offeringItemName === "") {
+            setErrorMsg('Please fill in all required fields.');
+            return false;
+        }
+        if(requestingItemName === offeringItemName) {
+            setErrorMsg('You cannot request and offer the same item.');
+            return false;
+        }
+
         const requestingItem = allItems.find(item => item.name.toLowerCase() === requestingItemName.toLowerCase());
         const offeringItem = allItems.find(item => item.name.toLowerCase() === offeringItemName.toLowerCase());
 
+        const partnerResponse = await axios.post("http://localhost:5000/partnerships/get-partner", { userId: user.user_id });
+        if(!partnerResponse.data.partner) {
+            setErrorMsg('Error: Unable to find partner.');
+            return false;
+        }
+        const receiving_id = receiving.toLowerCase().includes("partner") ? partnerResponse.data.partner.user_id : user.user_id;
+        const giving_id = giving.toLowerCase().includes("partner") ? partnerResponse.data.partner.user_id : user.user_id;
+
         const createPostResponse = await axios.post("http://localhost:5000/posts/update-post", { 
             userId: user.user_id,
-            // postingPartnershipId: partnerResponse.data.partner.partnership_id,
             postId: viewingPost.post_id,
             requestingItemId: requestingItem.item_id,
             requestingItemAmt: requestingItemAmt,
             offeringItemId: offeringItem.item_id,
             offeringItemAmt: offeringItemAmt,
-            isNegotiable: isNegotiable
+            receivingId: receiving_id,
+            givingId: giving_id,
+            isNegotiable: isNegotiable,
         });
         if(!createPostResponse.data.status) {
             setErrorMsg('Error: Failed to update post.');
@@ -307,7 +325,7 @@ export default function Dashboard(props) {
             </div>
             <div className={styles.popup_section}>
                 <label htmlFor="offering_item_list">Item to offer:</label>
-                <select name="offering_item_list" id="offering_item_list" defaultValue={'DEFAULT'} className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); UpdateRequestingItemData(e.target.value); }}>
+                <select name="offering_item_list" id="offering_item_list" defaultValue={'DEFAULT'} className={styles.popup_select} onChange={(e) => { console.log(e.target.value); setOfferingItemName(e.target.value); UpdateRequestingItemData(e.target.value); }}>
                     <option hidden disabled value="DEFAULT"></option>
                     {offeringItems.map((item, index) => (
                         <option key={index} value={item.name.toLowerCase()}>
@@ -333,13 +351,22 @@ export default function Dashboard(props) {
             <div className={styles.post_popup}>
                 <h2>Your Post Details</h2>
                 <div className={styles.error_message}>{errorMsg}</div>
-                <p>Offering Item: <span>{viewingPost.offering}</span> {viewingPost.offeringAmount > 1 ? "x" + viewingPost.offeringAmount : ""}</p>
-                <p>Requesting Item: <span>{viewingPost.requesting}</span> {viewingPost.requestingAmount > 1 ? "x" + viewingPost.requestingAmount : ""}</p>
+                <p>Requesting Item: <span>{viewingPost.requesting}</span> x{viewingPost.requestingAmount}</p>
+                <p>Offering Item: <span>{viewingPost.offering}</span> x{viewingPost.offeringAmount}</p>
                 {viewingPost.isNegotiable > 0 && <p>Willing to negotiate.</p>}
                 <p className={styles.created}>Created at: <time>{new Date(viewingPost.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>
                 {viewingPost.createdAt !== viewingPost.updatedAt && <p className={styles.created}>Updated at: <time>{new Date(viewingPost.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>}
                 <div className={styles.button_group}>
-                    <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { SetPostObject(viewingPost); setShowViewPostPopup(false); setShowEditPostPopup(true); }}>Edit Post</button>
+                    <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { 
+                        SetPostObject(viewingPost);
+                        setShowViewPostPopup(false);
+                        setShowEditPostPopup(true);
+                        setRequestingItemName(viewingPost.requesting.toLowerCase());
+                        UpdateOfferingItemData(viewingPost.requesting.toLowerCase());
+                        setOfferingItemName(viewingPost.offering.toLowerCase());
+                        UpdateRequestingItemData(viewingPost.offering.toLowerCase());
+                        console.log(viewingPost); 
+                    }}>Edit Post</button>
                     <button className={`${styles.button} ${styles.delete_button}`} onClick={() => { DeletePost(viewingPost.post_id) }}>Delete Post</button>
                 </div>
             </div>
@@ -365,27 +392,45 @@ export default function Dashboard(props) {
         <Popup trigger={setShowEditPostPopup}>
             <h2>Edit Post</h2>
             <div className={styles.error_message}>{errorMsg}</div>
+            {/* REQUESTING */}
             <div className={styles.popup_section}>
-                <label htmlFor="offering_item_list_edit">Item to offer:</label>
-                <select name="offering_item_list_edit" defaultValue={viewingPost.offering} id="offering_item_list_edit" className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); }}>
+                <label htmlFor="requesting_item_list">Item to request:</label>
+                <select name="requesting_item_list" id="requesting_item_list" defaultValue={viewingPost?.requesting?.toLowerCase()} className={styles.popup_select} onChange={(e) => { setRequestingItemName(e.target.value); UpdateOfferingItemData(e.target.value); }}>
                     {allItems.map((item, index) => (
-                        <option key={index} value={item.name}>
+                        <option key={index} value={item.name.toLowerCase()}>
                             {item.name}
                         </option>
                     ))}
                 </select>
-                <input type="number" id="offering_amount_edit" name="quantity" min="1" max="99" defaultValue={viewingPost.offeringAmount} onChange={(e) => { setOfferingItemAmt(e.target.value); }}/>
+                <input type="number" id="requesting_amount" name="quantity" min="1" max="99" value={requestingItemAmt < 0 ? "" : requestingItemAmt} onChange={(e) => { setRequestingItemAmt(e.target.value); UpdateOfferingItemData(e.target.value); }}/>
             </div>
             <div className={styles.popup_section}>
-                <label htmlFor="requesting_item_list_edit">Item to request:</label>
-                <select name="requesting_item_list_edit" defaultValue={viewingPost.requesting} id="requesting_item_list_edit" className={styles.popup_select} onChange={(e) => { setRequestingItemName(e.target.value); }}>
-                    {allItems.map((item, index) => (
-                        <option key={index} value={item.name}>
+                <label>For:</label>
+                <select name="requesting_for" id="requesting_for" defaultValue={viewingPost?.user_id_receiving == user.user_id ? "me" : "partner"} className={styles.popup_select} onChange={(e) => { setReceiving(e.target.value); }}>
+                    <option key={0} value={"me"}>Me</option>
+                    <option key={1} value={"partner"}>My Partner</option>
+                </select>
+            </div>
+
+            <br/>
+            {/* OFFERING */}
+            <div className={styles.popup_section}>
+                <label>From:</label>
+                <select name="offering_from" id="offering_from" defaultValue={viewingPost?.user_id_giving == user.user_id ? "me" : "partner"} className={styles.popup_select} onChange={(e) => { setGiving(e.target.value); GetItems(e.target.value); setOfferingItemName(""); }}>
+                    <option key={0} value={"me"}>Me</option>
+                    <option key={1} value={"partner"}>My Partner</option>
+                </select>
+            </div>
+            <div className={styles.popup_section}>
+                <label htmlFor="offering_item_list">Item to offer:</label>
+                <select name="offering_item_list" id="offering_item_list" defaultValue={viewingPost?.offering?.toLowerCase()} className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); UpdateRequestingItemData(e.target.value); }}>
+                    {offeringItems.map((item, index) => (
+                        <option key={index} value={item.name.toLowerCase()}>
                             {item.name}
                         </option>
                     ))}
                 </select>
-                <input type="number" id="requesting_amount_edit" name="quantity" min="1" max="99" defaultValue={viewingPost.requestingAmount} onChange={(e) => { setRequestingItemAmt(e.target.value); }}/>
+                <input type="number" id="offering_amount" name="quantity" min="1" max="99" value={offeringItemAmt < 0 ? "" : offeringItemAmt} onChange={(e) => { setOfferingItemAmt(e.target.value); UpdateRequestingItemData(e.target.value); }}/>
             </div>
             <div className={styles.popup_section}>
                 <button className={styles.create_button} onClick={UpdatePost}>Save</button>
@@ -443,12 +488,12 @@ export default function Dashboard(props) {
         <Popup trigger={setShowViewTransactionPopup}>
             <div className={styles.post_popup}>
                 <h2>Transaction Details</h2>
-                {viewingTransaction.state <= 0 && viewingTransaction.proposing_post_id && viewingTransaction.proposing_post_id !== workingTransaction.post_id && <h3>Other party has proposed:</h3>}
+                {viewingTransaction.state <= 0 && viewingTransaction.proposing_post_id && viewingTransaction.proposing_post_id !== workingTransaction.post_id && <p><strong>Other party has proposed:</strong></p>}
                 <div className={styles.error_message}>{errorMsg}</div>
                 <p>Offering Item: <span>{workingTransaction?.offering_item_name}</span> x{offeringAmt}</p>
                 <p>Requesting Item: <span>{workingTransaction?.requesting_item_name}</span> x{requestingAmt}</p>
-                {postCreator && viewingTransaction.state > 0 && <p>Confirmation code: {hash}</p>}
-                {viewingTransaction.isNegotiable > 0 && <p>Willing to negotiate.</p>}
+                {postCreator && viewingTransaction.state > 0 && <div className={styles.transaction_status}>Confirmation code: {hash}</div>}
+                {viewingTransaction.isNegotiable > 0 && <p className={styles.transaction_status}>Willing to negotiate.</p>}
                 {
                     postCreator // If the user is the one who made the post
                     ?   <div className={styles.button_group}>
@@ -462,15 +507,16 @@ export default function Dashboard(props) {
                         </div>
                     :   <div className={styles.button_group}>
                             {
-                                ((viewingTransaction.ownsPrimaryPost && !viewingTransaction.primary_approved) || (!viewingTransaction.ownsPrimaryPost && !viewingTransaction.secondary_approved))
-                                ?   <>
-                                    <div>
-                                     <label>Enter code from partner:</label>
-                                     <input type="text" placeholder={hash} maxLength={8} onChange={(e) => { setEnteredHash(e.target.value); }} />
-                                    </div>
-                                    <button className={`${styles.button}`} onClick={() => { SubmitHash(); }}>Submit</button>
+                                viewingTransaction.state > 0
+                                ?   userHasApproved ? <p className={styles.transaction_status}>Awaiting other party's confirmation.</p>
+                                    : <>
+                                        <div>
+                                        <label className={styles.transaction_status}>Enter code from partner:</label>
+                                        <input type="text" placeholder={"Type code here"} maxLength={8} onChange={(e) => { setEnteredHash(e.target.value); }} />
+                                        </div>
+                                        <button className={`${styles.button}`} onClick={() => { SubmitHash(); }}>Submit</button>
                                     </>
-                                :   <div>Awaiting other party's confirmation.</div>
+                                :   !userHasApproved ? <p className={styles.transaction_status}>Awaiting partner's approval.</p> : <p className={styles.transaction_status}>Awaiting other party's approval.</p>
                             }
                         </div>
                 }
@@ -592,7 +638,7 @@ export default function Dashboard(props) {
                         {matchPostsContainer}
                     </div>
                     <div className={`${styles.dashboard} ${styles.my_posts}`}>
-                        <h1>My Posts</h1>
+                        <h1>Your Posts</h1>
                         {myPostsContainer}
                     </div>
                     <div className={`${styles.dashboard} ${styles.all_posts}`}>

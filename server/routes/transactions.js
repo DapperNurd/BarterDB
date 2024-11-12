@@ -16,10 +16,16 @@ router.post('/create-transaction', async (req, res) => {
     // Basically makes it so you can't just get the user's info by knowing their user ID.
     if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
 
-    const hashCode = "0000000000000000";
+    let hash = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    // Loop to generate characters for the specified length
+    for (let i = 0; i < 16; i++) {
+        const randomInd = Math.floor(Math.random() * characters.length);
+        hash += characters.charAt(randomInd);
+    }
 
     try {
-        const [result] = await db.query('INSERT INTO transaction (primary_post_id, secondary_post_id, hash_code, proposing_post_id, proposing_primary_request_amt, proposing_primary_offer_amt, primary_approved) VALUES (?, ?, ?, ?, ?, ?, ?)', [primaryPost.post_id, secondaryPostId, hashCode, primaryPost.post_id, primaryPost.requestingAmount, primaryPost.offeringAmount, isNegotiating ? 1 : 0]);
+        const [result] = await db.query('INSERT INTO transaction (primary_post_id, secondary_post_id, hash_code, proposing_post_id, proposing_primary_request_amt, proposing_primary_offer_amt, primary_approved) VALUES (?, ?, ?, ?, ?, ?, ?)', [primaryPost.post_id, secondaryPostId, hash, primaryPost.post_id, primaryPost.requestingAmount, primaryPost.offeringAmount, isNegotiating ? 1 : 0]);
 
         if (result) {
             const [result2] = await db.query('UPDATE post SET is_matched = true WHERE post_id = ? OR post_id = ?', [primaryPost.post_id, secondaryPostId]);
@@ -71,7 +77,8 @@ router.post('/get-transactions', async (req, res) => {
             transaction
         WHERE 
             primary_post_id IN (SELECT post_id FROM related_posts)
-            OR secondary_post_id IN (SELECT post_id FROM related_posts);
+            OR secondary_post_id IN (SELECT post_id FROM related_posts)
+        ORDER BY state, created_at;
     `;
 
     try {

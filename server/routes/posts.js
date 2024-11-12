@@ -158,6 +158,8 @@ router.post('/update-post', async (req, res) => {
     const requestingItemAmt = req.body.requestingItemAmt;
     const offeringItemId = req.body.offeringItemId;
     const offeringItemAmt = req.body.offeringItemAmt;
+    const receivingId = req.body.receivingId;
+    const givingId = req.body.givingId;
     const isNegotiable = req.body.isNegotiable;
 
     // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
@@ -170,8 +172,10 @@ router.post('/update-post', async (req, res) => {
                                             requesting_amount = ?, 
                                             offering_item_id = ?, 
                                             offering_amount = ?, 
-                                            is_negotiable = ?
-                                        WHERE post_id = ?`, [requestingItemId, requestingItemAmt, offeringItemId, offeringItemAmt, isNegotiable, postId]);
+                                            is_negotiable = ?,
+                                            user_id_receiving = ?,
+                                            user_id_giving = ?
+                                        WHERE post_id = ?`, [requestingItemId, requestingItemAmt, offeringItemId, offeringItemAmt, isNegotiable, receivingId, givingId, postId]);
         
 
         if (result) {

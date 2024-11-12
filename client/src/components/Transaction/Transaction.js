@@ -76,32 +76,17 @@ export default function Transaction(props) {
     }
 
     const date = () => {
-        if(props.data.created_at === props.data.updated_at) {
-            return  <div> Created at: 
-                        <time>{
-                            new Date(props.data.created_at).toLocaleDateString('en-US', { 
-                                year: 'numeric', 
-                                month: 'long', // Full month name
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })
-                        }</time>
-                    </div>
-        }
-        else {
-            return  <div> Updated at: 
-                        <time>{
-                            new Date(props.data.updated_at).toLocaleDateString('en-US', { 
-                                year: 'numeric', 
-                                month: 'long', // Full month name
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                            })
-                        }</time>
-                    </div>
-        }
+        return  <div> Completed: 
+                    <time>{
+                        new Date(props.data.updated_at).toLocaleDateString('en-US', { 
+                            year: 'numeric', 
+                            month: 'long', // Full month name
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })
+                    }</time>
+                </div>
     }
 
     // const hash = ownsPrimaryPost ? props.data.hash_code.substring(0, 8) : props.data.hash_code.substring(8, 16);
@@ -116,21 +101,21 @@ export default function Transaction(props) {
     const negotiating = primaryPost.is_negotiable > 0 && secondaryPost.is_negotiable > 0;
 
     return props.data && (
-        <button className={styles.post} onClick={OpenPost}>
+        <button className={`${styles.post} ${props.data.state >= 2 ? styles.completed : ''}`} onClick={OpenPost}>
             {negotiating && props.data.state <= 0 && props.data.proposing_post_id && props.data.proposing_post_id !== workingTransaction.post_id && <div className={styles.post_line}><em>NEW PROPOSAL</em></div>}
             <div className={styles.post_line}>
-                <div className={styles.post_label}>Trading:</div>
-                <div className={`${styles.post_item} ${styles.offering_item}`}>{workingTransaction.offering_item_name}</div>
+                <div className={styles.post_label}>{props.data.state < 2 ? "Trading" : "Traded"}:</div>
+                <div className={`${styles.post_item} ${props.data.state >= 2 ? styles.completed_label : styles.offering_item}`}>{workingTransaction.offering_item_name}</div>
                 <div className={styles.post_amt}>x{offeringAmt}</div>
             </div>
             <div className={styles.post_line}>
                 <div className={styles.post_label}>For:</div>
-                <div className={`${styles.post_item} ${styles.requesting_item}`}>{workingTransaction.requesting_item_name}</div>
+                <div className={`${styles.post_item} ${props.data.state >= 2 ? styles.completed_label : styles.requesting_item}`}>{workingTransaction.requesting_item_name}</div>
                 <div className={styles.post_amt}>x{requestingAmt}</div>
             </div>
-            {negotiating && <div className={styles.post_line}><em>Negotiating.</em></div>}
+            {props.data.state < 2 && negotiating && <div className={styles.post_line}><em>Negotiating.</em></div>}
             {props.data.state <= 0 && <div className={styles.post_line}><em>{(!userHasApproved) ? "Awaiting your approval." : "Awaiting other party's approval."}</em></div>}
-            {/* {date()} */}
+            {props.data.state >= 2 && date()}
         </button>
     );
 }

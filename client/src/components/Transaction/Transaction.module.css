@@ -22,6 +22,15 @@
     transition: 0.1s;
 }
 
+.completed {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.completed_label {
+    color: white;
+}
+
 .post:hover {
     background-color: rgba(255, 255, 255, 0.1);
     transition: 0s;

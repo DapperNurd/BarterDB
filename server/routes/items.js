@@ -84,7 +84,10 @@ router.post('/delete-item', async (req, res) => {
     if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
 
     try {
-        const [deleteResult] = await db.query('DELETE FROM post WHERE requesting_item_id = ? OR offering_item_id = ?', [itemId, itemId]);
+        let deleteResult = null;
+        deleteResult = await db.query('DELETE FROM user_item WHERE item_id = ?', [itemId, itemId]);
+        deleteResult = await db.query('DELETE FROM item_transit WHERE received_item_id = ?', [itemId, itemId]);
+        deleteResult = await db.query('DELETE FROM post WHERE requesting_item_id = ? OR offering_item_id = ?', [itemId, itemId]);
         const [result] = await db.query('DELETE FROM item WHERE item_id = ?', [itemId]);
 
         if (result) {
