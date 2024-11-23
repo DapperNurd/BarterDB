@@ -11,6 +11,9 @@ export default function Transaction(props) {
     const [primaryPost, setPrimaryPost] = useState({});
     const [secondaryPost, setSecondaryPost] = useState({});
 
+    const [primaryItem, setPrimaryItem] = useState({});
+    const [secondaryItem, setSecondaryItem] = useState({});
+
     const CheckOwnership = async () => {
         const ownershipResponse = await axios.post("http://localhost:5000/posts/get-post-owner", { userId: user.user_id, postId: props.data.primary_post_id });
         if(ownershipResponse.data.isOwner) {
@@ -34,9 +37,33 @@ export default function Transaction(props) {
         setSecondaryPost(secondaryPostResponse.data.post);
     }
 
+    const GetItems = async () => {
+        console.log("PRIAMRY ITEM", primaryPost?.requesting_item_id);
+        const primaryItemResponse = await axios.post("http://localhost:5000/items/get-item", { itemId: primaryPost?.requesting_item_id });
+        if(primaryItemResponse.data.message) {
+            console.log('Error: Failed to get primary item.');
+            return;
+        }
+        setPrimaryItem(primaryItemResponse.data.item);
+
+        const secondaryItemResponse = await axios.post("http://localhost:5000/items/get-item", { itemId: primaryPost?.offering_item_id });
+        if(secondaryItemResponse.data.message) {
+            console.log('Error: Failed to get secondary item.');
+            return;
+        }
+        setSecondaryItem(secondaryItemResponse.data.item);
+    }
+
+    useEffect(() => {
+        if(primaryPost?.requesting_item_id && primaryPost?.offering_item_id) {
+            GetItems();
+        }
+    }, [primaryPost, secondaryPost]);
+
     useEffect(() => {
         CheckOwnership();
         GetPosts();
+        GetItems();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // ----------- props.data example --------------
@@ -95,18 +122,28 @@ export default function Transaction(props) {
 
     const workingTransaction = ownsPrimaryPost ? primaryPost : secondaryPost;
 
-    const offeringAmt = ownsPrimaryPost ? props.data.proposing_primary_offer_amt ?? workingTransaction.offering_amount : props.data.proposing_primary_request_amt ?? workingTransaction?.offering_amount;
-    const requestingAmt = ownsPrimaryPost ? props.data.proposing_primary_request_amt ?? workingTransaction.requesting_amount : props.data.proposing_primary_offer_amt ?? workingTransaction?.requesting_amount;
+    const workingPrimaryItem = !ownsPrimaryPost ? primaryItem : secondaryItem;
+    const workingSecondaryItem = ownsPrimaryPost ? primaryItem : secondaryItem;
+
+    const offeringAmt = ownsPrimaryPost 
+                    ? props.data.proposing_primary_offer_amt ?? workingTransaction.offering_amount 
+                    : props.data.proposing_primary_request_amt ?? workingTransaction?.offering_amount;
+                    
+    const requestingAmt = ownsPrimaryPost 
+                    ? props.data.proposing_primary_request_amt ?? workingTransaction.requesting_amount 
+                    : props.data.proposing_primary_offer_amt ?? workingTransaction?.requesting_amount;
 
     const negotiating = primaryPost.is_negotiable > 0 && secondaryPost.is_negotiable > 0;
 
     return props.data && (
         <button className={`${styles.post} ${props.data.state >= 2 ? styles.completed : ''}`} onClick={OpenPost}>
             {negotiating && props.data.state <= 0 && props.data.proposing_post_id && props.data.proposing_post_id !== workingTransaction.post_id && <div className={styles.post_line}><em>NEW PROPOSAL</em></div>}
+            <p>{primaryPost?.item_id ? "got post" : "not got post"}</p>
+            <p>{primaryItem?.name ?? "no item found"}</p>
             <div className={styles.post_line}>
                 <div className={styles.post_label}>{props.data.state < 2 ? "Trading" : "Traded"}:</div>
                 <div className={`${styles.post_item} ${props.data.state >= 2 ? styles.completed_label : styles.offering_item}`}>{workingTransaction.offering_item_name}</div>
-                <div className={styles.post_amt}>x{offeringAmt}</div>
+                <div className={styles.post_amt}>x{offeringAmt + workingPrimaryItem?.transfer_cost}</div>
             </div>
             <div className={styles.post_line}>
                 <div className={styles.post_label}>For:</div>

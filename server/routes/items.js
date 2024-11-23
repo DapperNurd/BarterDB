@@ -23,6 +23,26 @@ router.get('/get-items', async (req, res) => {
     }
 });
 
+router.post('/get-item', async (req, res) => {
+    const itemId = req.body.itemId;
+    console.log(itemId);
+
+    try { // This gets all posts associated with the userId, and also gets the item names associating with the post item id's (just so we don't have to query again later)
+        const [result] = await db.query('SELECT * FROM item WHERE item_id = ?', [itemId]);
+
+        if (result.length > 0) {
+            return res.send({item: result[0]});
+        }
+        else {
+            res.send({message: 'No items found.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
 router.post('/create-item', async (req, res) => {
     const userId = req.body.userId;
     const name = req.body.name;

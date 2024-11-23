@@ -250,3 +250,18 @@
     justify-content: space-between;
     gap: 10px;
 }
+
+.transaction_line {
+    display: grid;
+    grid-template-columns: 4fr 3fr 1fr;
+    font-size: 1.05rem;
+}
+
+.right_align {
+    justify-self: right;
+}
+
+.last_column {
+    grid-column: 3;
+    padding-bottom: 15px;
+}

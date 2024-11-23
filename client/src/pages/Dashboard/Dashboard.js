@@ -32,6 +32,7 @@ export default function Dashboard(props) {
     const [myPosts, setMyPosts] = useState([]);
     const [myTransactions, setMyTransactions] = useState([]);
 
+    // All of this could just be saved as a post object realistically (except maybe the names, though we could add that to the sql query)
     const [requestingItemName, setRequestingItemName] = useState("");
     const [requestingItemAmt, setRequestingItemAmt] = useState(-1);
     const [offeringItemName, setOfferingItemName] = useState("");
@@ -478,6 +479,20 @@ export default function Dashboard(props) {
         RefreshAllDashboards();
     }
 
+    const SetTransactionItems = async () => {
+        console.log("primary post", viewingPost?.primary_post);
+        console.log("all items", allItems);
+
+        // with workingTransaction?.offering_item_name, search through allItems for an item with the same name and set offeringFee equal to that item's transfer_cost
+        const offeringFee = allItems.find(item => item.name === workingTransaction?.offering_item_name)?.transfer_cost;
+    }
+
+    useEffect(() => {
+        if(viewingTransaction.primary_post?.requesting_item_id && viewingTransaction.secondary_post?.offering_item_id) {
+            SetTransactionItems();
+        }
+    }, [viewingTransaction]);
+
     const workingTransaction = viewingTransaction.ownsPrimaryPost ? viewingTransaction.primary_post : viewingTransaction.secondary_post;
     const hash = viewingTransaction.ownsPrimaryPost ? viewingTransaction.hash_code?.substring(0, 8) : viewingTransaction.hash_code?.substring(8, 16);
     const userHasApproved = (viewingTransaction?.ownsPrimaryPost && viewingTransaction?.primary_approved) || (!viewingTransaction?.ownsPrimaryPost && viewingTransaction?.secondary_approved);
@@ -490,8 +505,22 @@ export default function Dashboard(props) {
                 <h2>Transaction Details</h2>
                 {viewingTransaction.state <= 0 && viewingTransaction.proposing_post_id && viewingTransaction.proposing_post_id !== workingTransaction.post_id && <p><strong>Other party has proposed:</strong></p>}
                 <div className={styles.error_message}>{errorMsg}</div>
-                <p>Offering Item: <span>{workingTransaction?.offering_item_name}</span> x{offeringAmt}</p>
-                <p>Requesting Item: <span>{workingTransaction?.requesting_item_name}</span> x{requestingAmt}</p>
+                <div className={styles.transaction_line}>
+                    <div>Offering Item:</div>
+                    <div>{workingTransaction?.offering_item_name}</div> 
+                    <div className={styles.right_align}>x {offeringAmt}</div>
+                </div>
+                <div className={styles.transaction_line}>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+4</div>
+                </div>
+                <div className={styles.transaction_line}>
+                    <div>Requesting Item:</div>
+                    <div>{workingTransaction?.requesting_item_name}</div> 
+                    <div className={styles.right_align}>x {requestingAmt}</div>
+                </div>
+                <div className={styles.transaction_line}>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+4</div>
+                </div>
                 {postCreator && viewingTransaction.state > 0 && <div className={styles.transaction_status}>Confirmation code: {hash}</div>}
                 {viewingTransaction.isNegotiable > 0 && <p className={styles.transaction_status}>Willing to negotiate.</p>}
                 {
