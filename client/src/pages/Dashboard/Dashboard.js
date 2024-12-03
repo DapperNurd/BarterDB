@@ -44,6 +44,9 @@ export default function Dashboard(props) {
     const [proposingRequestAmount, setProposingRequestAmount] = useState(-1);
     const [proposingOfferAmount, setProposingOfferAmount] = useState(-1);
 
+    const [offeringFee, setOfferingFee] = useState(0);
+    const [requestingFee, setRequestingFee] = useState(0);
+
     const [enteredHash, setEnteredHash] = useState('');
 
     const [errorMsg, setErrorMsg] = useState('');
@@ -484,7 +487,8 @@ export default function Dashboard(props) {
         console.log("all items", allItems);
 
         // with workingTransaction?.offering_item_name, search through allItems for an item with the same name and set offeringFee equal to that item's transfer_cost
-        const offeringFee = allItems.find(item => item.name === workingTransaction?.offering_item_name)?.transfer_cost;
+        setOfferingFee(allItems.find(item => item.name === workingTransaction?.offering_item_name)?.transfer_cost);
+        setRequestingFee(allItems.find(item => item.name === workingTransaction?.requesting_item_name)?.transfer_cost);
     }
 
     useEffect(() => {
@@ -511,7 +515,7 @@ export default function Dashboard(props) {
                     <div className={styles.right_align}>x {offeringAmt}</div>
                 </div>
                 <div className={styles.transaction_line}>
-                    <div className={`${styles.last_column} ${styles.right_align}`}>+4</div>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee}</div>
                 </div>
                 <div className={styles.transaction_line}>
                     <div>Requesting Item:</div>
@@ -519,7 +523,7 @@ export default function Dashboard(props) {
                     <div className={styles.right_align}>x {requestingAmt}</div>
                 </div>
                 <div className={styles.transaction_line}>
-                    <div className={`${styles.last_column} ${styles.right_align}`}>+4</div>
+                    <div className={`${styles.last_column} ${styles.right_align}`}></div>
                 </div>
                 {postCreator && viewingTransaction.state > 0 && <div className={styles.transaction_status}>Confirmation code: {hash}</div>}
                 {viewingTransaction.isNegotiable > 0 && <p className={styles.transaction_status}>Willing to negotiate.</p>}
