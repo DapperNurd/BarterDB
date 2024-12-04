@@ -27,8 +27,8 @@ DROP TABLE IF EXISTS `item`;
 CREATE TABLE `item` (
   `item_id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `value` int NOT NULL,
-  `transfer_cost` int NOT NULL,
+  `value` float NOT NULL,
+  `transfer_cost` float NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`item_id`)
@@ -41,7 +41,7 @@ CREATE TABLE `item` (
 
 LOCK TABLES `item` WRITE;
 /*!40000 ALTER TABLE `item` DISABLE KEYS */;
-INSERT INTO `item` VALUES (11,'Wheat (lb)',5,2,'2024-11-09 02:56:13','2024-11-08 20:35:16'),(12,'Potato (lb)',2,3,'2024-11-09 02:56:19','2024-11-08 21:58:38'),(13,'Saffron (g)',10,2,'2024-11-09 02:56:38','2024-11-08 20:35:49'),(14,'Corn (lb)',8,3,'2024-11-09 02:56:57','2024-11-08 20:35:53');
+INSERT INTO `item` VALUES (11,'Wheat (lb)',5,0.2,'2024-11-09 02:56:13','2024-12-03 22:14:19'),(12,'Potato (lb)',8,0.5,'2024-11-09 02:56:19','2024-12-03 22:14:23'),(13,'Saffron (g)',30,0.1,'2024-11-09 02:56:38','2024-12-03 22:14:21'),(14,'Corn (lb)',12,0.3,'2024-11-09 02:56:57','2024-12-03 22:14:24');
 /*!40000 ALTER TABLE `item` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -65,7 +65,7 @@ CREATE TABLE `item_transit` (
   CONSTRAINT `associated_transaction_id` FOREIGN KEY (`associated_transaction_id`) REFERENCES `transaction` (`transaction_id`),
   CONSTRAINT `received_item_id` FOREIGN KEY (`received_item_id`) REFERENCES `item` (`item_id`),
   CONSTRAINT `receiving_user_id` FOREIGN KEY (`receiving_user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=77 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -196,7 +196,7 @@ CREATE TABLE `post` (
   CONSTRAINT `requesting_item_id` FOREIGN KEY (`requesting_item_id`) REFERENCES `item` (`item_id`),
   CONSTRAINT `user_id_giving` FOREIGN KEY (`user_id_giving`) REFERENCES `user` (`user_id`),
   CONSTRAINT `user_id_receiving` FOREIGN KEY (`user_id_receiving`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=135 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=150 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -205,7 +205,7 @@ CREATE TABLE `post` (
 
 LOCK TABLES `post` WRITE;
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
-INSERT INTO `post` VALUES (127,59,12,8,14,2,0,75,59,1,'2024-11-12 22:10:00','2024-11-12 14:11:04'),(128,60,14,2,12,8,0,73,60,1,'2024-11-12 22:10:57','2024-11-12 14:11:04'),(129,75,14,25,12,100,1,59,75,1,'2024-11-12 22:13:01','2024-11-12 14:13:53'),(130,73,12,4,14,1,1,60,73,1,'2024-11-12 22:13:46','2024-11-12 14:13:53'),(131,59,13,4,14,5,0,59,59,1,'2024-11-17 00:10:37','2024-11-16 16:12:35'),(132,60,14,5,13,4,0,60,60,1,'2024-11-17 00:11:45','2024-11-16 16:12:35'),(133,59,14,10,13,8,1,59,59,1,'2024-11-17 00:39:07','2024-11-16 16:39:28'),(134,73,13,4,14,5,1,73,73,1,'2024-11-17 00:39:07','2024-11-16 16:39:28');
+INSERT INTO `post` VALUES (127,59,12,8,14,2,0,75,59,1,'2024-11-12 22:10:00','2024-11-12 14:11:04'),(128,60,14,2,12,8,0,73,60,1,'2024-11-12 22:10:57','2024-11-12 14:11:04'),(129,75,14,25,12,100,1,59,75,1,'2024-11-12 22:13:01','2024-11-12 14:13:53'),(130,73,12,4,14,1,1,60,73,1,'2024-11-12 22:13:46','2024-11-12 14:13:53'),(131,59,13,4,14,5,0,59,59,1,'2024-11-17 00:10:37','2024-11-16 16:12:35'),(132,60,14,5,13,4,0,60,60,1,'2024-11-17 00:11:45','2024-11-16 16:12:35'),(133,59,14,10,13,8,1,59,59,1,'2024-11-17 00:39:07','2024-11-16 16:39:28'),(134,73,13,4,14,5,1,73,73,1,'2024-11-17 00:39:07','2024-11-16 16:39:28'),(136,59,11,4,12,10,1,59,59,1,'2024-12-03 23:08:54','2024-12-03 15:09:32'),(137,60,12,2.5,11,1,1,60,60,1,'2024-12-03 23:09:26','2024-12-03 15:09:32'),(144,59,13,0.2,12,1,0,59,59,1,'2024-12-04 04:51:54','2024-12-03 21:02:06'),(146,60,12,1,13,0.2,0,60,60,1,'2024-12-04 04:53:19','2024-12-03 21:02:06'),(147,60,12,20,11,8,0,60,60,1,'2024-12-04 05:04:39','2024-12-03 21:15:41'),(148,59,11,8,12,20,0,59,59,1,'2024-12-04 05:15:39','2024-12-03 21:15:41'),(149,59,12,22.5,13,6,0,59,59,0,'2024-12-04 06:15:56','2024-12-03 22:15:56');
 /*!40000 ALTER TABLE `post` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,7 +230,7 @@ CREATE TABLE `sessions` (
 
 LOCK TABLES `sessions` WRITE;
 /*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
-INSERT INTO `sessions` VALUES ('H2pNk1NOsoXADR2nTWkSEEPhcM1t9liJ',1731891190,'{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2024-11-18T00:28:11.689Z\",\"httpOnly\":true,\"path\":\"/\"},\"userId\":59}'),('upDQvxx1uWsUfRg2sSzjlc5w-7bMcF6t',1731890426,'{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2024-11-18T00:14:50.050Z\",\"httpOnly\":true,\"path\":\"/\"},\"userId\":73}');
+INSERT INTO `sessions` VALUES ('PoK1F-mroD-TLrUXlWNjbxd_zRKlJ_jQ',1733356877,'{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2024-12-04T23:26:45.865Z\",\"httpOnly\":true,\"path\":\"/\"},\"userId\":60}'),('kBbysp95-ZwU6uoD1SNo-3CaiF7FR31t',1733379356,'{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2024-12-05T06:10:05.693Z\",\"httpOnly\":true,\"path\":\"/\"},\"userId\":59}'),('l9zIgzQspBbsZxTYTVG9695al-AfVYW1',1733384400,'{\"cookie\":{\"originalMaxAge\":86400000,\"expires\":\"2024-12-05T06:10:02.356Z\",\"httpOnly\":true,\"path\":\"/\"},\"userId\":60}');
 /*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -261,7 +261,7 @@ CREATE TABLE `transaction` (
   CONSTRAINT `post1_id` FOREIGN KEY (`primary_post_id`) REFERENCES `post` (`post_id`),
   CONSTRAINT `post2_id` FOREIGN KEY (`secondary_post_id`) REFERENCES `post` (`post_id`),
   CONSTRAINT `proposing_user_id` FOREIGN KEY (`proposing_post_id`) REFERENCES `post` (`post_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -270,7 +270,7 @@ CREATE TABLE `transaction` (
 
 LOCK TABLES `transaction` WRITE;
 /*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
-INSERT INTO `transaction` VALUES (35,133,134,'M1540493ZJKWHMSE',0,0,1,134,10,8,'2024-11-17 00:39:28','2024-11-16 16:40:26');
+INSERT INTO `transaction` VALUES (38,147,148,'NV5HT6CV171K6H8N',2,1,1,147,20,8,'2024-12-04 05:15:41','2024-12-03 22:09:57');
 /*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -324,7 +324,7 @@ CREATE TABLE `user_item` (
   KEY `user_id_idx` (`user_id`),
   CONSTRAINT `item_id` FOREIGN KEY (`item_id`) REFERENCES `item` (`item_id`),
   CONSTRAINT `user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=68 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -333,7 +333,7 @@ CREATE TABLE `user_item` (
 
 LOCK TABLES `user_item` WRITE;
 /*!40000 ALTER TABLE `user_item` DISABLE KEYS */;
-INSERT INTO `user_item` VALUES (60,73,14,1,'2024-11-12 22:12:15','2024-11-12 14:14:33'),(63,60,12,100,'2024-11-12 22:15:14','2024-11-12 14:15:14'),(65,60,13,1,'2024-11-17 00:11:36','2024-11-16 16:14:08'),(66,60,14,5,'2024-11-17 00:15:42','2024-11-16 16:15:42'),(67,59,13,4,'2024-11-17 00:15:42','2024-11-16 16:15:42');
+INSERT INTO `user_item` VALUES (60,73,14,1000,'2024-11-12 22:12:15','2024-12-03 21:45:56'),(63,60,12,370,'2024-11-12 22:15:14','2024-12-03 22:09:57'),(65,60,13,1,'2024-11-17 00:11:36','2024-11-16 16:14:08'),(66,60,14,5,'2024-11-17 00:15:42','2024-11-16 16:15:42'),(67,59,13,999,'2024-11-17 00:15:42','2024-12-03 21:15:22'),(68,59,12,900,'2024-12-03 23:03:54','2024-12-03 22:09:03'),(69,60,11,1000,'2024-12-03 23:09:14','2024-12-03 22:09:03'),(70,73,11,1000,'2024-12-04 05:45:59','2024-12-03 21:45:59'),(71,59,11,8,'2024-12-04 06:09:57','2024-12-03 22:09:57');
 /*!40000 ALTER TABLE `user_item` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -346,4 +346,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-12-02 22:21:07
+-- Dump completed on 2024-12-04  8:50:01
