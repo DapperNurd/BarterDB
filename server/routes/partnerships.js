@@ -93,14 +93,28 @@ router.post('/delete-partner', async (req, res) => {
     if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
 
     try {
-        const [result] = await db.query(`DELETE p
-                                        FROM post AS p
-                                        JOIN partnership AS pa ON p.posting_partnership_id = pa.partnership_id
-                                        WHERE pa.user1_id = ? OR pa.user2_id = ?`, [userId, userId]);
+        const query = `
+            SELECT t.*
+            FROM transaction t
+            JOIN post p_primary ON t.primary_post_id = p_primary.post_id
+            JOIN post p_secondary ON t.secondary_post_id = p_secondary.post_id
+            WHERE p_primary.user_id_giving = ?
+            OR p_primary.user_id_receiving = ?
+            OR p_secondary.user_id_giving = ?
+            OR p_secondary.user_id_receiving = ?
+        `;
+        const [transactionFetchResult] = await db.query(query, [userId, userId, userId, userId]);
+        transactionFetchResult.forEach(async transaction => await db.query('DELETE FROM item_transit WHERE associated_transaction_id = ?', [transaction.transaction_id]));
 
-        const [result2] = await db.query('DELETE FROM partnership WHERE user1_id = ? OR user2_id = ?', [userId, userId]);
+        transactionFetchResult.forEach(async transaction => await db.query('DELETE FROM transaction WHERE transaction_id = ?', [transaction.transaction_id]));
+        
+        await db.query('DELETE FROM partnership WHERE user1_id = ? OR user2_id = ?', [userId, userId]);
 
-        if (result) {
+        const [deletePostsResult] = await db.query(`DELETE p FROM post AS p WHERE p.user_id_receiving = ? OR p.user_id_giving = ?`, [userId, userId]);
+
+        db.query('DELETE FROM partnership WHERE user1_id = ? OR user2_id = ?', [userId, userId]);
+
+        if (deletePostsResult) {
             return res.send({status: true});
         }
         else {
