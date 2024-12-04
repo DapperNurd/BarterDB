@@ -25,7 +25,6 @@ router.get('/get-items', async (req, res) => {
 
 router.post('/get-item', async (req, res) => {
     const itemId = req.body.itemId;
-    console.log(itemId);
 
     try { // This gets all posts associated with the userId, and also gets the item names associating with the post item id's (just so we don't have to query again later)
         const [result] = await db.query('SELECT * FROM item WHERE item_id = ?', [itemId]);

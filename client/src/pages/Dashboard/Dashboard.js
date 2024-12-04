@@ -46,6 +46,9 @@ export default function Dashboard(props) {
 
     const [offeringFee, setOfferingFee] = useState(0);
     const [requestingFee, setRequestingFee] = useState(0);
+    const [userHasAmount, setUserHasAmount] = useState(false);
+    const [userHasOfferAmount, setUserHasOfferAmount] = useState(false);
+    const [userOfferingAmountOwned, setUserOfferingAmountOwned] = useState(0);
 
     const [enteredHash, setEnteredHash] = useState('');
 
@@ -58,6 +61,7 @@ export default function Dashboard(props) {
         setRequestingItemAmt(-1);
         setIsNegotiable(0);
         setErrorMsg("");
+        setOfferingFee(0);
     }, [showCreatePostPopup, showEditPostPopup, showViewPostPopup, showMatchPostPopup, showViewTransactionPopup, showNewTransactionProposalPopup]);
 
     const SetPostObject = (data) => {
@@ -329,7 +333,7 @@ export default function Dashboard(props) {
             </div>
             <div className={styles.popup_section}>
                 <label htmlFor="offering_item_list">Item to offer:</label>
-                <select name="offering_item_list" id="offering_item_list" defaultValue={'DEFAULT'} className={styles.popup_select} onChange={(e) => { console.log(e.target.value); setOfferingItemName(e.target.value); UpdateRequestingItemData(e.target.value); }}>
+                <select name="offering_item_list" id="offering_item_list" defaultValue={'DEFAULT'} className={styles.popup_select} onChange={(e) => { console.log(e.target.value); setOfferingItemName(e.target.value); UpdateRequestingItemData(e.target.value); AdjustOfferingFeeByName(e.target.value);}}>
                     <option hidden disabled value="DEFAULT"></option>
                     {offeringItems.map((item, index) => (
                         <option key={index} value={item.name.toLowerCase()}>
@@ -337,11 +341,17 @@ export default function Dashboard(props) {
                         </option>
                     ))}
                 </select>
-                <input type="number" id="offering_amount" name="quantity" min="1" max="99" value={offeringItemAmt < 0 ? "" : offeringItemAmt} onChange={(e) => { setOfferingItemAmt(e.target.value); UpdateRequestingItemData(e.target.value); }}/>
+                <input type="number" id="offering_amount" name="quantity" min="1" max="99" value={offeringItemAmt < 0 ? "" : offeringItemAmt} onChange={(e) => { setOfferingItemAmt(e.target.value); UpdateRequestingItemData(e.target.value);}}/>
+                <div/><div/>
+                <div className={styles.transaction_line}>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee * offeringItemAmt}</div>
+                </div>
             </div>
             
             <div className={styles.popup_section}>
-                <button className={styles.create_button} onClick={CreatePost}>Create</button>
+                { userOfferingAmountOwned >= Number(offeringItemAmt) + offeringFee*Number(offeringItemAmt)
+                 ? <button className={styles.create_button} onClick={CreatePost}>Create</button>
+                 : <button className={styles.create_button} disabled>Missing items {"(" + userOfferingAmountOwned + " owned)"}</button>}
                 <div className={styles.checkbox}>
                     <label htmlFor="negotiate">Will Negotiate</label>
                     <input type="checkbox" id="negotiate" name="negotiate" onChange={(e) => { setIsNegotiable(e.target.checked ? 1 : 0); }}/>
@@ -356,7 +366,7 @@ export default function Dashboard(props) {
                 <h2>Your Post Details</h2>
                 <div className={styles.error_message}>{errorMsg}</div>
                 <p>Requesting Item: <span>{viewingPost.requesting}</span> x{viewingPost.requestingAmount}</p>
-                <p>Offering Item: <span>{viewingPost.offering}</span> x{viewingPost.offeringAmount}</p>
+                <p>Offering Item: <span>{viewingPost.offering}</span> x{viewingPost.offeringAmount} (+{viewingPost.fee * viewingPost.offeringAmount})</p>
                 {viewingPost.isNegotiable > 0 && <p>Willing to negotiate.</p>}
                 <p className={styles.created}>Created at: <time>{new Date(viewingPost.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>
                 {viewingPost.createdAt !== viewingPost.updatedAt && <p className={styles.created}>Updated at: <time>{new Date(viewingPost.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>}
@@ -382,8 +392,8 @@ export default function Dashboard(props) {
             <div className={styles.post_popup}>
                 <h2>Matching Post</h2>
                 <div className={styles.error_message}>{errorMsg}</div>
-                <p>Offering Item: <span>{viewingPost.offering}</span> {viewingPost.offeringAmount > 1 ? "x" + viewingPost.offeringAmount : ""}</p>
-                <p>Requesting Item: <span>{viewingPost.requesting}</span> {viewingPost.requestingAmount > 1 ? "x" + viewingPost.requestingAmount : ""}</p>
+                <p>Offering Item: <span>{viewingPost.offering}</span> x{viewingPost.offeringAmount}</p>
+                <p>Requesting Item: <span>{viewingPost.requesting}</span> x{viewingPost.requestingAmount}</p>
                 {viewingPost.isNegotiable > 0 && <p>Willing to negotiate.</p>}
                 <div className={styles.button_group}>
                     <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { MatchPost(viewingPost.matchPost); }}>Match Post</button>
@@ -427,7 +437,7 @@ export default function Dashboard(props) {
             </div>
             <div className={styles.popup_section}>
                 <label htmlFor="offering_item_list">Item to offer:</label>
-                <select name="offering_item_list" id="offering_item_list" defaultValue={viewingPost?.offering?.toLowerCase()} className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); UpdateRequestingItemData(e.target.value); }}>
+                <select name="offering_item_list" id="offering_item_list" defaultValue={viewingPost?.offering?.toLowerCase()} className={styles.popup_select} onChange={(e) => { setOfferingItemName(e.target.value); UpdateRequestingItemData(e.target.value); AdjustOfferingFeeByName(e.target.value);}}>
                     {offeringItems.map((item, index) => (
                         <option key={index} value={item.name.toLowerCase()}>
                             {item.name}
@@ -435,9 +445,15 @@ export default function Dashboard(props) {
                     ))}
                 </select>
                 <input type="number" id="offering_amount" name="quantity" min="1" max="99" value={offeringItemAmt < 0 ? "" : offeringItemAmt} onChange={(e) => { setOfferingItemAmt(e.target.value); UpdateRequestingItemData(e.target.value); }}/>
+                <div/><div/>
+                <div className={styles.transaction_line}>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee * offeringItemAmt}</div>
+                </div>
             </div>
             <div className={styles.popup_section}>
-                <button className={styles.create_button} onClick={UpdatePost}>Save</button>
+                { userOfferingAmountOwned >= Number(offeringItemAmt) + offeringFee*Number(offeringItemAmt)
+                    ? <button className={styles.create_button} onClick={UpdatePost}>Save</button>
+                    : <button className={styles.create_button} disabled>Missing items {"(" + userOfferingAmountOwned + " owned)"}</button>}
                 <div className={styles.checkbox}>
                     <label htmlFor="negotiate_edit">Will Negotiate</label>
                     <input type="checkbox" defaultChecked={viewingPost.isNegotiable > 0} id="negotiate_edit" name="negotiate_edit" onChange={(e) => { setIsNegotiable(e.target.checked ? 1 : 0); }}/>
@@ -447,10 +463,14 @@ export default function Dashboard(props) {
     );
 
     const ApproveTransaction = async () => {
+        const requestFee = requestingFee * requestingAmt;
+        const offerFee = offeringFee * offeringAmt;
         const response = await axios.post("http://localhost:5000/transactions/approve-transaction", { 
             userId: user.user_id, 
             transactionId: viewingTransaction.transaction_id, 
-            isPrimary: viewingTransaction.ownsPrimaryPost
+            isPrimary: viewingTransaction.ownsPrimaryPost,
+            primaryFee: viewingTransaction.ownsPrimaryPost ? offerFee : requestFee,
+            secondaryFee: viewingTransaction.ownsPrimaryPost ? requestFee : offerFee,
         });
         if(!response.data.status) {
             setErrorMsg('Failed to approve transaction.');
@@ -470,7 +490,7 @@ export default function Dashboard(props) {
         const response = await axios.post("http://localhost:5000/transactions/confirm-hash", { 
             userId: user.user_id, 
             transactionId: viewingTransaction.transaction_id, 
-            isPrimary: viewingTransaction.ownsPrimaryPost
+            isPrimary: viewingTransaction.ownsPrimaryPost,
         });
         if(!response.data.status) {
             setErrorMsg('Failed to submit hash.');
@@ -482,13 +502,30 @@ export default function Dashboard(props) {
         RefreshAllDashboards();
     }
 
-    const SetTransactionItems = async () => {
-        console.log("primary post", viewingPost?.primary_post);
-        console.log("all items", allItems);
+    const AdjustOfferingFeeByName = async (value) => {
+        const pickedItem = allItems.find(item => item.name.toLowerCase() === value.toLowerCase());
 
-        // with workingTransaction?.offering_item_name, search through allItems for an item with the same name and set offeringFee equal to that item's transfer_cost
-        setOfferingFee(allItems.find(item => item.name === workingTransaction?.offering_item_name)?.transfer_cost);
+        setOfferingFee(pickedItem?.transfer_cost ?? 0);
+
+        const userInventoryResponse = await axios.post("http://localhost:5000/items/get-inventory", { userId: user.user_id });
+        const itemInInventory = userInventoryResponse.data.items.find(inventoryItem => inventoryItem.item_id === pickedItem.item_id);
+        
+        setUserOfferingAmountOwned(itemInInventory ? itemInInventory.item_amount : 0);
+        const num = Number(offeringItemAmt);
+        setUserHasAmount(itemInInventory && itemInInventory.item_amount >= num + pickedItem?.transfer_cost*num);
+    }
+
+    const SetTransactionItems = async () => {
+        const temp_fee = allItems.find(item => item.name === workingTransaction?.offering_item_name)?.transfer_cost;
+        setOfferingFee(temp_fee);
         setRequestingFee(allItems.find(item => item.name === workingTransaction?.requesting_item_name)?.transfer_cost);
+
+        const userInventoryResponse = await axios.post("http://localhost:5000/items/get-inventory", { userId: user.user_id });
+
+        const itemInInventory = userInventoryResponse.data.items.find(inventoryItem => inventoryItem.item_id === workingTransaction?.offering_item_id);
+        
+        setUserOfferingAmountOwned(itemInInventory ? itemInInventory.item_amount : 0);
+        setUserHasAmount(itemInInventory && itemInInventory.item_amount >= offeringAmt + temp_fee*offeringAmt);
     }
 
     useEffect(() => {
@@ -515,7 +552,7 @@ export default function Dashboard(props) {
                     <div className={styles.right_align}>x {offeringAmt}</div>
                 </div>
                 <div className={styles.transaction_line}>
-                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee}</div>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee * offeringAmt}</div>
                 </div>
                 <div className={styles.transaction_line}>
                     <div>Requesting Item:</div>
@@ -530,12 +567,16 @@ export default function Dashboard(props) {
                 {
                     postCreator // If the user is the one who made the post
                     ?   <div className={styles.button_group}>
-                            {!userHasApproved && viewingTransaction.state < 1
-                                ? <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { ApproveTransaction(); }}>Approve</button>
-                                : viewingTransaction.state < 1 && <button className={`${styles.button}`} disabled>Approved</button>
+                            {
+                                userHasAmount || viewingTransaction.state > 0
+                                ? !userHasApproved && viewingTransaction.state < 1
+                                    ? <button className={`${styles.button} ${styles.edit_button}`} onClick={() => { ApproveTransaction(); }}>Approve</button>
+                                    : viewingTransaction.state < 1 && <button className={`${styles.button}`} disabled>Approved</button>
+                                : <button className={`${styles.button}`} disabled>Missing items</button>
                             }
+                            
                             {viewingTransaction.primary_post?.is_negotiable > 0 && viewingTransaction.secondary_post?.is_negotiable > 0 && viewingTransaction.state < 1 && !userHasApproved &&
-                                <button className={`${styles.button}`} onClick={() => { setProposingOfferAmount(workingTransaction?.offering_amount); setProposingRequestAmount(workingTransaction?.requesting_amount); setShowViewTransactionPopup(false); setShowNewTransactionProposalPopup(true); }}>Make Proposal</button>
+                                <button className={`${styles.button}`} onClick={() => { setProposingOfferAmount(workingTransaction?.offering_amount); setProposingRequestAmount(workingTransaction?.requesting_amount); setShowViewTransactionPopup(false); setShowNewTransactionProposalPopup(true); console.log(offeringAmt + offeringFee*offeringAmt);}}>Make Proposal</button>
                             }
                         </div>
                     :   <div className={styles.button_group}>
@@ -544,8 +585,8 @@ export default function Dashboard(props) {
                                 ?   userHasApproved ? <p className={styles.transaction_status}>Awaiting other party's confirmation.</p>
                                     : <>
                                         <div>
-                                        <label className={styles.transaction_status}>Enter code from partner:</label>
-                                        <input type="text" placeholder={"Type code here"} maxLength={8} onChange={(e) => { setEnteredHash(e.target.value); }} />
+                                            <label className={styles.transaction_status}>Enter code from partner:</label>
+                                            <input type="text" placeholder={"Type code here"} maxLength={8} onChange={(e) => { setEnteredHash(e.target.value); }} />
                                         </div>
                                         <button className={`${styles.button}`} onClick={() => { SubmitHash(); }}>Submit</button>
                                     </>
@@ -577,6 +618,19 @@ export default function Dashboard(props) {
         RefreshAllDashboards();
     }
 
+    const CheckOwnedValues = async (value) => {
+        value = Number
+        const temp_fee = allItems.find(item => item.name === workingTransaction?.offering_item_name)?.transfer_cost;
+
+        const userInventoryResponse = await axios.post("http://localhost:5000/items/get-inventory", { userId: user.user_id });
+
+        const itemInInventory = userInventoryResponse.data.items.find(inventoryItem => inventoryItem.item_id === workingTransaction?.offering_item_id);
+        console.log(`Item in inventory: ${itemInInventory?.item_amount} >= ${value} + ${temp_fee}*${value} (${value + temp_fee*value})...` +
+        (itemInInventory?.item_amount >= value + temp_fee * value ? "true" : "false"));
+
+        setUserHasOfferAmount(itemInInventory && itemInInventory.item_amount >= value + temp_fee*value);
+    }
+
     const newTransactionProposalPopup = (
         <Popup trigger={setShowNewTransactionProposalPopup}>
             <div className={styles.post_popup}>
@@ -585,7 +639,10 @@ export default function Dashboard(props) {
                 <div className={styles.popup_section}>
                     <label htmlFor="offering_item_list_label">Offering Item: </label>
                     <label htmlFor="offering_item_list_item">{workingTransaction?.offering_item_name}</label>
-                    <input type="number" id="offering_amount_edit" name="quantity" min="1" max="99" value={proposingOfferAmount} defaultValue={workingTransaction?.offering_amount} onChange={(e) => { setProposingOfferAmount(e.target.value); }}/>
+                    <input type="number" id="offering_amount_edit" name="quantity" min="1" max={userOfferingAmountOwned} value={proposingOfferAmount} defaultValue={workingTransaction?.offering_amount} onChange={(e) => { setProposingOfferAmount(e.target.value); CheckOwnedValues(e.target.value); }}/>
+                </div>
+                <div className={styles.transaction_line}>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee * proposingOfferAmount}</div>
                 </div>
                 <div className={styles.popup_section}>
                     <label htmlFor="requesting_item_list_label">Requesting Item:</label>
@@ -593,7 +650,9 @@ export default function Dashboard(props) {
                     <input type="number" id="requesting_amount_edit" name="quantity" min="1" max="99" value={proposingRequestAmount} defaultValue={workingTransaction?.requesting_amount} onChange={(e) => { setProposingRequestAmount(e.target.value); }}/>
                 </div>
                 <div className={styles.popup_section}>
-                    <button className={styles.create_button} onClick={SendProposal}>Send Proposal</button>
+                    {userHasOfferAmount
+                     ? <button className={styles.create_button} onClick={SendProposal}>Send Proposal</button>
+                     : <button className={styles.create_button} disabled>Missing items {"(" + userOfferingAmountOwned + " owned)"}</button>}
                     <button className={styles.create_button} onClick={() => { setProposingOfferAmount(workingTransaction?.offering_amount); setProposingRequestAmount(workingTransaction?.requesting_amount); }}>Revert</button>
                 </div>
             </div>
@@ -628,7 +687,7 @@ export default function Dashboard(props) {
         <div className={styles.post_container}>
             {viewPosts.length <= 0 && <div className={styles.no_posts}>No posts to show</div>}
             {viewPosts.map(function(post, i) {
-                return <Post key={i} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowMatchPostPopup} />;
+                return <Post key={i} id={post.post_id} type={"match"} data={post} setData={setViewingPost} setShowPopup={setShowMatchPostPopup} />;
             })}
         </div>
     );
@@ -637,7 +696,7 @@ export default function Dashboard(props) {
         <div className={styles.post_container}>
             {myPosts.length <= 0 && <div className={styles.no_posts}>No posts to show</div>}
             {myPosts.map(function(post, i) {
-                return <Post key={i} isUsers={true} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowViewPostPopup} />;
+                return <Post key={i} isUsers={true} type={"post"} id={post.post_id} data={post} setData={setViewingPost} setShowPopup={setShowViewPostPopup} />;
             })}
         </div>
     );
@@ -646,7 +705,7 @@ export default function Dashboard(props) {
         <div className={styles.post_container}>
             {myTransactions.length <= 0 && <div className={styles.no_posts}>No transactions made</div>}
             {myTransactions.map(function(transaction, i) {
-                return <Transaction key={i} user={user} id={transaction.post_id} data={transaction} setData={setViewingTransaction} setShowPopup={setShowViewTransactionPopup} />;
+                return <Transaction key={i} user={user} type={"transaction"} id={transaction.post_id} data={transaction} setData={setViewingTransaction} setShowPopup={setShowViewTransactionPopup} />;
             })}
         </div>
     );

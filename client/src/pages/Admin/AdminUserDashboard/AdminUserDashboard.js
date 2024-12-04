@@ -223,7 +223,7 @@ export default function AdminUserDashboard(props) {
                 <Sidebar user={props.user} setUser={props.setUser}>
                     <NavLink to="/dashboard/admin">Users</NavLink>
                     <NavLink to="/dashboard/admin/items">Items</NavLink>
-                    {/* <NavLink to="/dashboard/admin/transactions">Transactions</NavLink> */}
+                    <NavLink to="/dashboard/admin/transactions">Transactions</NavLink>
                 </Sidebar>
                 <section className={styles.section}>
                     <div className={styles.dash_header}>

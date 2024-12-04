@@ -38,7 +38,7 @@ export default function Transaction(props) {
     }
 
     const GetItems = async () => {
-        console.log("PRIAMRY ITEM", primaryPost?.requesting_item_id);
+        // console.log("PRIAMRY ITEM", primaryPost?.requesting_item_id);
         const primaryItemResponse = await axios.post("http://localhost:5000/items/get-item", { itemId: primaryPost?.requesting_item_id });
         if(primaryItemResponse.data.message) {
             console.log('Error: Failed to get primary item.');
@@ -138,12 +138,10 @@ export default function Transaction(props) {
     return props.data && (
         <button className={`${styles.post} ${props.data.state >= 2 ? styles.completed : ''}`} onClick={OpenPost}>
             {negotiating && props.data.state <= 0 && props.data.proposing_post_id && props.data.proposing_post_id !== workingTransaction.post_id && <div className={styles.post_line}><em>NEW PROPOSAL</em></div>}
-            <p>{primaryPost?.item_id ? "got post" : "not got post"}</p>
-            <p>{primaryItem?.name ?? "no item found"}</p>
             <div className={styles.post_line}>
                 <div className={styles.post_label}>{props.data.state < 2 ? "Trading" : "Traded"}:</div>
                 <div className={`${styles.post_item} ${props.data.state >= 2 ? styles.completed_label : styles.offering_item}`}>{workingTransaction.offering_item_name}</div>
-                <div className={styles.post_amt}>x{offeringAmt + workingPrimaryItem?.transfer_cost}</div>
+                <div className={styles.post_amt}>x{offeringAmt + workingPrimaryItem?.transfer_cost*offeringAmt}</div>
             </div>
             <div className={styles.post_line}>
                 <div className={styles.post_label}>For:</div>

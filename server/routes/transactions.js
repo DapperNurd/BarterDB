@@ -41,6 +41,29 @@ router.post('/create-transaction', async (req, res) => {
     }
 });
 
+router.post('/get-all-transactions', async (req, res) => {
+    const userId = req.body.userId;
+
+    // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
+    // Basically makes it so you can't just get the user's info by knowing their user ID.
+    if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
+
+    try {
+        const [result] = await db.query('SELECT * FROM transaction');
+
+        if (result) {
+            return res.send({transactions: result});
+        }
+        else {
+            return res.send({message: 'Error finding transactions.'});
+        }
+    }
+    catch (err) {
+        console.error("Error occurred:", err);
+        return res.status(500).send({ err: err });
+    }
+});
+
 router.post('/get-transactions', async (req, res) => {
     const userId = req.body.userId;
 
@@ -101,6 +124,8 @@ router.post('/approve-transaction', async (req, res) => {
     const userId = req.body.userId;
     const transactionId = req.body.transactionId;
     const isPrimary = req.body.isPrimary;
+    const primaryFee = req.body.primaryFee;
+    const secondaryFee = req.body.secondaryFee;
 
     // This is a security measure to ensure that the user ID in the session matches the user ID in the request.
     // Basically makes it so you can't just get the user's info by knowing their user ID.
@@ -121,10 +146,8 @@ router.post('/approve-transaction', async (req, res) => {
                     JOIN post p2 ON t.secondary_post_id = p2.post_id
                     SET 
                         user_item.item_amount = CASE
-                            WHEN user_item.user_id = p1.user_id_giving AND user_item.item_id = p1.offering_item_id THEN user_item.item_amount - p1.offering_amount
-                            WHEN user_item.user_id = p2.user_id_receiving AND user_item.item_id = p1.offering_item_id THEN user_item.item_amount + p1.offering_amount
-                            WHEN user_item.user_id = p2.user_id_giving AND user_item.item_id = p2.offering_item_id THEN user_item.item_amount - p2.offering_amount
-                            WHEN user_item.user_id = p1.user_id_receiving AND user_item.item_id = p2.offering_item_id THEN user_item.item_amount + p2.offering_amount
+                            WHEN user_item.user_id = p1.user_id_giving AND user_item.item_id = p1.offering_item_id THEN user_item.item_amount - (p1.offering_amount + ?)
+                            WHEN user_item.user_id = p2.user_id_giving AND user_item.item_id = p2.offering_item_id THEN user_item.item_amount - (p2.offering_amount + ?)
                             ELSE user_item.item_amount
                         END
                     WHERE 
@@ -133,7 +156,7 @@ router.post('/approve-transaction', async (req, res) => {
                         (user_item.user_id = p2.user_id_giving AND user_item.item_id = p2.offering_item_id) OR
                         (user_item.user_id = p1.user_id_receiving AND user_item.item_id = p2.offering_item_id);
                 `;
-                const [updateInventoriesResult] = await db.query(updateInventoriesQuery, [transactionId]);
+                const [updateInventoriesResult] = await db.query(updateInventoriesQuery, [transactionId, primaryFee, secondaryFee]);
                 if(!updateInventoriesResult) return res.send({status: false, message: 'Failed at inventory move step 1.'});
 
                 const correctionQuery = 'DELETE FROM user_item WHERE item_amount <= 0;';
