@@ -420,7 +420,7 @@ export default function Dashboard(props) {
             </div>
             <div className={styles.popup_section}>
                 <label>For:</label>
-                <select name="requesting_for" id="requesting_for" defaultValue={viewingPost?.user_id_receiving == user.user_id ? "me" : "partner"} className={styles.popup_select} onChange={(e) => { setReceiving(e.target.value); }}>
+                <select name="requesting_for" id="requesting_for" defaultValue={viewingPost?.user_id_receiving === user.user_id ? "me" : "partner"} className={styles.popup_select} onChange={(e) => { setReceiving(e.target.value); }}>
                     <option key={0} value={"me"}>Me</option>
                     <option key={1} value={"partner"}>My Partner</option>
                 </select>
@@ -430,7 +430,7 @@ export default function Dashboard(props) {
             {/* OFFERING */}
             <div className={styles.popup_section}>
                 <label>From:</label>
-                <select name="offering_from" id="offering_from" defaultValue={viewingPost?.user_id_giving == user.user_id ? "me" : "partner"} className={styles.popup_select} onChange={(e) => { setGiving(e.target.value); GetItems(e.target.value); setOfferingItemName(""); }}>
+                <select name="offering_from" id="offering_from" defaultValue={viewingPost?.user_id_giving === user.user_id ? "me" : "partner"} className={styles.popup_select} onChange={(e) => { setGiving(e.target.value); GetItems(e.target.value); setOfferingItemName(""); }}>
                     <option key={0} value={"me"}>Me</option>
                     <option key={1} value={"partner"}>My Partner</option>
                 </select>
@@ -532,7 +532,7 @@ export default function Dashboard(props) {
         if(viewingTransaction.primary_post?.requesting_item_id && viewingTransaction.secondary_post?.offering_item_id) {
             SetTransactionItems();
         }
-    }, [viewingTransaction]);
+    }, [viewingTransaction]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const workingTransaction = viewingTransaction.ownsPrimaryPost ? viewingTransaction.primary_post : viewingTransaction.secondary_post;
     const hash = viewingTransaction.ownsPrimaryPost ? viewingTransaction.hash_code?.substring(0, 8) : viewingTransaction.hash_code?.substring(8, 16);
