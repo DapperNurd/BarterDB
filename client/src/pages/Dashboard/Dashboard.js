@@ -344,7 +344,7 @@ export default function Dashboard(props) {
                 <input type="number" id="offering_amount" name="quantity" min="1" max="99" value={offeringItemAmt < 0 ? "" : offeringItemAmt} onChange={(e) => { setOfferingItemAmt(e.target.value); UpdateRequestingItemData(e.target.value);}}/>
                 <div/><div/>
                 <div className={styles.transaction_line}>
-                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee * offeringItemAmt}</div>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{Math.round(offeringFee * offeringItemAmt * 100) / 100}</div>
                 </div>
             </div>
             
@@ -366,7 +366,7 @@ export default function Dashboard(props) {
                 <h2>Your Post Details</h2>
                 <div className={styles.error_message}>{errorMsg}</div>
                 <p>Requesting Item: <span>{viewingPost.requesting}</span> x{viewingPost.requestingAmount}</p>
-                <p>Offering Item: <span>{viewingPost.offering}</span> x{viewingPost.offeringAmount} (+{viewingPost.fee * viewingPost.offeringAmount})</p>
+                <p>Offering Item: <span>{viewingPost.offering}</span> x{viewingPost.offeringAmount} (+{Math.round(viewingPost.fee * viewingPost.offeringAmount * 100) / 100})</p>
                 {viewingPost.isNegotiable > 0 && <p>Willing to negotiate.</p>}
                 <p className={styles.created}>Created at: <time>{new Date(viewingPost.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>
                 {viewingPost.createdAt !== viewingPost.updatedAt && <p className={styles.created}>Updated at: <time>{new Date(viewingPost.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></p>}
@@ -447,7 +447,7 @@ export default function Dashboard(props) {
                 <input type="number" id="offering_amount" name="quantity" min="1" max="99" value={offeringItemAmt < 0 ? "" : offeringItemAmt} onChange={(e) => { setOfferingItemAmt(e.target.value); UpdateRequestingItemData(e.target.value); }}/>
                 <div/><div/>
                 <div className={styles.transaction_line}>
-                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee * offeringItemAmt}</div>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{Math.round(offeringFee * offeringItemAmt * 100) / 100}</div>
                 </div>
             </div>
             <div className={styles.popup_section}>
@@ -464,7 +464,7 @@ export default function Dashboard(props) {
 
     const ApproveTransaction = async () => {
         const requestFee = requestingFee * requestingAmt;
-        const offerFee = offeringFee * offeringAmt;
+        const offerFee = Math.round((offeringFee * offeringAmt) * 100) / 100;
         const response = await axios.post("http://localhost:5000/transactions/approve-transaction", { 
             userId: user.user_id, 
             transactionId: viewingTransaction.transaction_id, 
@@ -552,10 +552,10 @@ export default function Dashboard(props) {
                     <div className={styles.right_align}>x {offeringAmt}</div>
                 </div>
                 <div className={styles.transaction_line}>
-                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee * offeringAmt}</div>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{Math.round(offeringFee * offeringAmt * 100) / 100}</div>
                 </div>
                 <div className={styles.transaction_line}>
-                    <div>Requesting Item:</div>
+                    <div>Requesting Item: </div>
                     <div>{workingTransaction?.requesting_item_name}</div> 
                     <div className={styles.right_align}>x {requestingAmt}</div>
                 </div>
@@ -576,7 +576,7 @@ export default function Dashboard(props) {
                             }
                             
                             {viewingTransaction.primary_post?.is_negotiable > 0 && viewingTransaction.secondary_post?.is_negotiable > 0 && viewingTransaction.state < 1 && !userHasApproved &&
-                                <button className={`${styles.button}`} onClick={() => { setProposingOfferAmount(workingTransaction?.offering_amount); setProposingRequestAmount(workingTransaction?.requesting_amount); setShowViewTransactionPopup(false); setShowNewTransactionProposalPopup(true); console.log(offeringAmt + offeringFee*offeringAmt);}}>Make Proposal</button>
+                                <button className={`${styles.button}`} onClick={() => { setProposingOfferAmount(workingTransaction?.offering_amount); setProposingRequestAmount(workingTransaction?.requesting_amount); setShowViewTransactionPopup(false); setShowNewTransactionProposalPopup(true); CheckOwnedValues(workingTransaction?.offering_amount);}}>Make Proposal</button>
                             }
                         </div>
                     :   <div className={styles.button_group}>
@@ -619,16 +619,16 @@ export default function Dashboard(props) {
     }
 
     const CheckOwnedValues = async (value) => {
-        value = Number
+        value = Number(value);
         const temp_fee = allItems.find(item => item.name === workingTransaction?.offering_item_name)?.transfer_cost;
 
         const userInventoryResponse = await axios.post("http://localhost:5000/items/get-inventory", { userId: user.user_id });
 
         const itemInInventory = userInventoryResponse.data.items.find(inventoryItem => inventoryItem.item_id === workingTransaction?.offering_item_id);
-        console.log(`Item in inventory: ${itemInInventory?.item_amount} >= ${value} + ${temp_fee}*${value} (${value + temp_fee*value})...` +
-        (itemInInventory?.item_amount >= value + temp_fee * value ? "true" : "false"));
 
+        console.log(`${itemInInventory.item_amount} >= ${value} + ${temp_fee}*${value}`)
         setUserHasOfferAmount(itemInInventory && itemInInventory.item_amount >= value + temp_fee*value);
+        setOfferingFee(temp_fee);
     }
 
     const newTransactionProposalPopup = (
@@ -641,8 +641,8 @@ export default function Dashboard(props) {
                     <label htmlFor="offering_item_list_item">{workingTransaction?.offering_item_name}</label>
                     <input type="number" id="offering_amount_edit" name="quantity" min="1" max={userOfferingAmountOwned} value={proposingOfferAmount} defaultValue={workingTransaction?.offering_amount} onChange={(e) => { setProposingOfferAmount(e.target.value); CheckOwnedValues(e.target.value); }}/>
                 </div>
-                <div className={styles.transaction_line}>
-                    <div className={`${styles.last_column} ${styles.right_align}`}>+{offeringFee * proposingOfferAmount}</div>
+                <div>
+                    <div className={`${styles.last_column} ${styles.right_align}`}>+{Math.round(offeringFee * proposingOfferAmount * 100) / 100}</div>
                 </div>
                 <div className={styles.popup_section}>
                     <label htmlFor="requesting_item_list_label">Requesting Item:</label>

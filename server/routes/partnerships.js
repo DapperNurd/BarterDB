@@ -93,6 +93,9 @@ router.post('/delete-partner', async (req, res) => {
     if(req.session.userId !== userId) return res.status(401).send({message: 'User ID does not match session ID.'});
 
     try {
+        // When deleting a partnership, we also need to delete everything associated with it
+        // In order, we delete any items in transit assocaiting with transactions associating with the partnership, then any transactions associating with the partnership, then any posts associating with it.
+        // Then we delete the partnership
         const query = `
             SELECT t.*
             FROM transaction t

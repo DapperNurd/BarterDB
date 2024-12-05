@@ -182,7 +182,7 @@
 }
 
 .post_popup {
-    width: 375px;
+    min-width: 375px;
 }
 
 .post_popup p {
@@ -258,6 +258,7 @@
 }
 
 .right_align {
+    text-align: right;
     justify-self: right;
 }
 
