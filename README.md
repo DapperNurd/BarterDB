@@ -16,8 +16,6 @@ For example:
     - Anonymous offering and requesting
     - Making counter offers on transactions
 
-Include any relevant screenshots, if applicable.
-
 ---
 
 ## **Installation**
